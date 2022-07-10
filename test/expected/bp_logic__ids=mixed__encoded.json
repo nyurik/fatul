@@ -48,8 +48,8 @@
           "1": {
             "red": [
               {
-                "entity_id": 4,
-                "circuit_id": 2
+                "circuit_id": 2,
+                "_ref_id": "2.5,-1"
               }
             ]
           }
@@ -81,15 +81,15 @@
           "1": {
             "green": [
               {
-                "entity_id": 5,
-                "circuit_id": 2
+                "circuit_id": 2,
+                "_ref_id": "0,3"
               }
             ]
           },
           "2": {
             "red": [
               {
-                "entity_id": 3
+                "_ref_id": "-2.5,1"
               }
             ]
           }
@@ -122,15 +122,15 @@
           "1": {
             "red": [
               {
-                "entity_id": 6
+                "_ref_id": "2.5,-1"
               }
             ]
           },
           "2": {
             "green": [
               {
-                "entity_id": 4,
-                "circuit_id": 1
+                "circuit_id": 1,
+                "_ref_id": "0,-3"
               }
             ]
           }
@@ -160,8 +160,8 @@
           "1": {
             "red": [
               {
-                "entity_id": 5,
-                "circuit_id": 1
+                "circuit_id": 1,
+                "_ref_id": "-2.5,1"
               }
             ]
           }

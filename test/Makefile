@@ -53,9 +53,9 @@ run-tests:
 	$(DECODE) -p --ids keep --sort none $(BUILD_DIR)/bp_logic__ids=keep.json raw/bp_logic.txt
 	$(ENCODE) $(BUILD_DIR)/bp_logic__ids=keep.json - | $(DUMP) -p $(BUILD_DIR)/bp_logic__ids=keep__encoded.json -
 	$(DECODE) -p --ids refs --sort none $(BUILD_DIR)/bp_logic__ids=refs.json raw/bp_logic.txt
-	$(ENCODE) $(BUILD_DIR)/bp_logic__ids=refs.json - | $(DUMP) -p $(BUILD_DIR)/bp_logic__ids=keep__encoded.json -
+	$(ENCODE) $(BUILD_DIR)/bp_logic__ids=refs.json - | $(DUMP) -p $(BUILD_DIR)/bp_logic__ids=refs__encoded.json -
 	$(DECODE) -p --ids mixed --sort none $(BUILD_DIR)/bp_logic__ids=mixed.json raw/bp_logic.txt
-	$(ENCODE) $(BUILD_DIR)/bp_logic__ids=mixed.json - | $(DUMP) -p $(BUILD_DIR)/bp_logic__ids=keep__encoded.json -
+	$(ENCODE) $(BUILD_DIR)/bp_logic__ids=mixed.json - | $(DUMP) -p $(BUILD_DIR)/bp_logic__ids=mixed__encoded.json -
 	$(DECODE) -p --ids keep --sort entities $(BUILD_DIR)/bp_logic__sort=entities.json raw/bp_logic.txt
 	$(DECODE) -p --ids keep --sort keys $(BUILD_DIR)/bp_logic__sort=keys.json raw/bp_logic.txt
 	$(DECODE) -p --ids keep --sort all $(BUILD_DIR)/bp_logic__sort=all.json raw/bp_logic.txt
