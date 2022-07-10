@@ -22,7 +22,8 @@ cd fatul
 virtualenv -p python3 venv
 activate venv/bin/activate
 
-# Install a few simple dependencies
+# [Optoinal] Install pyperclip for clipboard support
+# If not installed, you can still encode/decode files
 pip3 install -r requirements.txt
 ```
 
