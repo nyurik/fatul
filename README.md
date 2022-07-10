@@ -17,8 +17,7 @@ Time to treat Factorio blueprints for what they really are -- software programs.
 git clone https://github.com/nyurik/fatul.git
 cd fatul
 
-# With Python, it is usually a good idea to use Python virtualenv,
-# but it will work without it too.
+# [Optional] It is usually a good idea to use Python virtualenv
 virtualenv -p python3 venv
 activate venv/bin/activate
 
