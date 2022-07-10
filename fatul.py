@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+#
+# Copyright (C) 2022 by Yuri Astrakhan <YuriAstrakhan@gmail.com>.
+# This code is licensed under the MIT license.
+#
+# The _make_iterencode() code is based on the Python JSON library's code.
+#
+
 import argparse
 import base64
 import json
