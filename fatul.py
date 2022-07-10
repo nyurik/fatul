@@ -258,7 +258,7 @@ class Processor:
         self.sort_keys = sort_mode == "all" or sort_mode == "keys"
         self.sort_entities = sort_mode == "all" or sort_mode == "entities"
         self.remove_entity_number = ids_mode == "refs"
-        self.use_refs = ids_mode != "keep"
+        self.use_rel_ids = ids_mode != "keep"
         self.generate_ids = False
 
     def decode(self, json_text: str) -> dict:
@@ -314,7 +314,8 @@ class Processor:
                 for idx, entity_data in enumerate(data):
                     path[-1] = str(idx)
                     # Switch between entity_id and entity_rel (relative position)
-                    self._update_ref_ids(entity_data["entity_number"], entity_data, entity_ids, position_to_entity_id)
+                    self._update_relative_ids(entity_data["entity_number"], entity_data, entity_ids,
+                                              position_to_entity_id)
                     if self.remove_entity_number:
                         del entity_data["entity_number"]
                     if self.sort_keys:
@@ -346,26 +347,26 @@ class Processor:
         for k in sorted(old_data.keys(), key=_key_sorter):
             data[k] = old_data[k]
 
-    def _update_ref_ids(self, entity_number: EID, data: Any, entity_ids: Dict[EID, Entity],
-                        position_to_entity_id: Dict[Position, EID], parent_key: str = None) -> None:
+    def _update_relative_ids(self, entity_number: EID, data: Any, entity_ids: Dict[EID, Entity],
+                             position_to_entity_id: Dict[Position, EID], parent_key: str = None) -> None:
         if type(data) == dict:
             for key, val in data.items():
                 if type(val) in COMPLEX_TYPES:
-                    self._update_ref_ids(entity_number, val, entity_ids, position_to_entity_id, key)
+                    self._update_relative_ids(entity_number, val, entity_ids, position_to_entity_id, key)
             entity_id = data.get("entity_id")
-            ref_id = data.get("entity_rel")
+            rel_id = data.get("entity_rel")
             if entity_id is not None:
-                if ref_id is not None:
+                if rel_id is not None:
                     raise ValueError(f"Cannot have both entity_id and entity_rel in {entity_number}")
                 # Validate referenced entity_id, even if we don"t use it
-                ref_id = self.make_ref_id(entity_number, entity_id, entity_ids)
-                if self.use_refs:
+                rel_id = self.make_rel_id(entity_number, entity_id, entity_ids)
+                if self.use_rel_ids:
                     del data["entity_id"]
-                    data["entity_rel"] = ref_id
+                    data["entity_rel"] = rel_id
                     self.sort_dict(data)
-            elif ref_id is not None:
-                entity_id = self.parse_ref_id(entity_number, ref_id, entity_ids, position_to_entity_id)
-                if not self.use_refs:
+            elif rel_id is not None:
+                entity_id = self.parse_rel_id(entity_number, rel_id, entity_ids, position_to_entity_id)
+                if not self.use_rel_ids:
                     del data["entity_rel"]
                     data["entity_id"] = entity_id
                     self.sort_dict(data)
@@ -378,47 +379,47 @@ class Processor:
                 if not self.generate_ids:
                     if not list_is_int:
                         raise ValueError(f"Invalid neighbour list {entity_number} - all values must be ints")
-                if self.use_refs != list_is_str:
-                    # Convert entity IDs to ref IDs or vice versa
+                if self.use_rel_ids != list_is_str:
+                    # Convert entity IDs to relative IDs or vice versa
                     old_list = data.copy()
                     data.clear()
                     for val in old_list:
-                        if self.use_refs:
-                            data.append(self.make_ref_id(entity_number, val, entity_ids))
+                        if self.use_rel_ids:
+                            data.append(self.make_rel_id(entity_number, val, entity_ids))
                         else:
-                            data.append(self.parse_ref_id(entity_number, val, entity_ids, position_to_entity_id))
+                            data.append(self.parse_rel_id(entity_number, val, entity_ids, position_to_entity_id))
             else:
                 for val in data:
                     if type(val) in COMPLEX_TYPES:
-                        self._update_ref_ids(entity_number, val, entity_ids, position_to_entity_id)
+                        self._update_relative_ids(entity_number, val, entity_ids, position_to_entity_id)
 
     @staticmethod
-    def make_ref_id(entity_number: EID, entity_id: EID, entity_ids: Dict[EID, Entity]) -> str:
+    def make_rel_id(entity_number: EID, entity_id: EID, entity_ids: Dict[EID, Entity]) -> str:
         assert type(entity_id) == int
         entity = entity_ids[entity_number]
-        ref = entity_ids.get(entity_id)
-        if ref is None:
+        info = entity_ids.get(entity_id)
+        if info is None:
             raise ValueError(f"Unrecognized entity ID {entity_id} in {entity.path}")
-        if len(ref.names) > 1:
+        if len(info.names) > 1:
             raise ValueError(f"Entity ID {entity_id} in {entity.path} is not unique at {entity.pos}")
-        x_diff = int_to_coord(ref.pos[0] - entity.pos[0])
-        y_diff = int_to_coord(ref.pos[1] - entity.pos[1])
+        x_diff = int_to_coord(info.pos[0] - entity.pos[0])
+        y_diff = int_to_coord(info.pos[1] - entity.pos[1])
         return f"{x_diff},{y_diff}"
 
     @staticmethod
-    def parse_ref_id(entity_number: EID, ref_id: str, entity_ids: Dict[EID, Entity],
+    def parse_rel_id(entity_number: EID, rel_id: str, entity_ids: Dict[EID, Entity],
                      position_to_entity_id: Dict[Position, EID]) -> EID:
-        assert type(ref_id) == str
+        assert type(rel_id) == str
         entity = entity_ids[entity_number]
-        ref_parts = ref_id.split(",", 2)
-        if len(ref_parts) != 2:
-            raise ValueError(f"Unrecognized ref ID {ref_id} in {entity.path}")
-        pos = Position((entity.pos[0] + coord_to_int(float(ref_parts[0])),
-                        entity.pos[1] + coord_to_int(float(ref_parts[1]))))
-        ref = position_to_entity_id.get(pos)
-        if ref is None:
-            raise ValueError(f"No entities found for ref ID {ref_id} ({pos[0], pos[1]}) in {entity.path}")
-        return ref
+        rel_parts = rel_id.split(",", 2)
+        if len(rel_parts) != 2:
+            raise ValueError(f"Unrecognized relative ID {rel_id} in {entity.path}")
+        pos = Position((entity.pos[0] + coord_to_int(float(rel_parts[0])),
+                        entity.pos[1] + coord_to_int(float(rel_parts[1]))))
+        entity_id = position_to_entity_id.get(pos)
+        if entity_id is None:
+            raise ValueError(f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {entity.path}")
+        return entity_id
 
     def _process_entity(self, entity_data: dict, path: List[str], entity_ids: Dict[EID, Entity],
                         position_to_entity_id: Dict[Position, EID], new_id: Optional[EID] = None) -> Optional[EID]:
@@ -457,7 +458,7 @@ class Processor:
         if pos in position_to_entity_id:
             # More than one entity at this position.
             # This could be a problem if there are any references to any of them.
-            # The relative ref may need more data to distinguish it.
+            # The relative ID may need more data to distinguish it.
             eid = position_to_entity_id[pos]
             entity = entity_ids[eid]
             entity.names.append(name)
