@@ -11,6 +11,7 @@
     ],
     "entities": [
       {
+        "entity_number": 1,
         "name": "big-electric-pole",
         "position": {
           "x": -290,
@@ -19,10 +20,10 @@
         "neighbours": [
           2,
           3
-        ],
-        "entity_number": 1
+        ]
       },
       {
+        "entity_number": 2,
         "name": "small-electric-pole",
         "position": {
           "x": -284.5,
@@ -30,10 +31,10 @@
         },
         "neighbours": [
           1
-        ],
-        "entity_number": 2
+        ]
       },
       {
+        "entity_number": 3,
         "name": "medium-electric-pole",
         "position": {
           "x": -289.5,
@@ -41,8 +42,7 @@
         },
         "neighbours": [
           1
-        ],
-        "entity_number": 3
+        ]
       }
     ],
     "item": "blueprint",

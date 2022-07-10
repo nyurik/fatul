@@ -6,7 +6,7 @@
       {"name": "substation", "position": {"x": -308, "y": -16}}, 
       {
         "name": "small-lamp", 
-        "connections": {"1": {"red": [{"_ref_id": "2.5,-1", "circuit_id": 2}]}}, 
+        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "2.5,-1"}]}}, 
         "control_behavior": {
           "use_colors": true, 
           "circuit_condition": {"comparator": "=", "constant": 21, "first_signal": {"name": "signal-X", "type": "virtual"}}
@@ -16,7 +16,7 @@
       {
         "name": "arithmetic-combinator", 
         "direction": 6, 
-        "connections": {"1": {"green": [{"_ref_id": "0,3", "circuit_id": 2}]}, "2": {"red": [{"_ref_id": "-2.5,1"}]}}, 
+        "connections": {"1": {"green": [{"circuit_id": 2, "entity_rel": "0,3"}]}, "2": {"red": [{"entity_rel": "-2.5,1"}]}}, 
         "control_behavior": {
           "arithmetic_conditions": {
             "operation": "/", 
@@ -30,7 +30,10 @@
       {
         "name": "decider-combinator", 
         "direction": 6, 
-        "connections": {"1": {"red": [{"_ref_id": "2.5,-1"}]}, "2": {"green": [{"_ref_id": "0,-3", "circuit_id": 1}]}}, 
+        "connections": {
+          "1": {"red": [{"entity_rel": "2.5,-1"}]}, 
+          "2": {"green": [{"circuit_id": 1, "entity_rel": "0,-3"}]}
+        }, 
         "control_behavior": {
           "decider_conditions": {
             "comparator": ">", 
@@ -46,7 +49,7 @@
       {
         "name": "constant-combinator", 
         "direction": 4, 
-        "connections": {"1": {"red": [{"_ref_id": "-2.5,1", "circuit_id": 1}]}}, 
+        "connections": {"1": {"red": [{"circuit_id": 1, "entity_rel": "-2.5,1"}]}}, 
         "control_behavior": {"filters": [{"count": 42, "index": 1, "signal": {"name": "signal-X", "type": "virtual"}}]}, 
         "position": {"x": -302.5, "y": -11.5}
       }

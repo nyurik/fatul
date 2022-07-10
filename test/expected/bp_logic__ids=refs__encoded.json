@@ -11,22 +11,23 @@
     ],
     "entities": [
       {
+        "entity_number": 1,
         "name": "substation",
         "position": {
           "x": -308,
           "y": -16
-        },
-        "entity_number": 1
+        }
       },
       {
+        "entity_number": 2,
         "name": "solar-panel",
         "position": {
           "x": -300.5,
           "y": -14.5
-        },
-        "entity_number": 2
+        }
       },
       {
+        "entity_number": 3,
         "name": "small-lamp",
         "position": {
           "x": -307.5,
@@ -52,10 +53,10 @@
               }
             ]
           }
-        },
-        "entity_number": 3
+        }
       },
       {
+        "entity_number": 4,
         "name": "arithmetic-combinator",
         "position": {
           "x": -305,
@@ -92,10 +93,10 @@
               }
             ]
           }
-        },
-        "entity_number": 4
+        }
       },
       {
+        "entity_number": 5,
         "name": "decider-combinator",
         "position": {
           "x": -305,
@@ -133,10 +134,10 @@
               }
             ]
           }
-        },
-        "entity_number": 5
+        }
       },
       {
+        "entity_number": 6,
         "name": "constant-combinator",
         "position": {
           "x": -302.5,
@@ -164,8 +165,7 @@
               }
             ]
           }
-        },
-        "entity_number": 6
+        }
       }
     ],
     "item": "blueprint",

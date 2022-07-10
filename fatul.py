@@ -313,7 +313,7 @@ class Processor:
                         self._process_entity(data[idx], path, entity_ids, position_to_entity_id, new_id)
                 for idx, entity_data in enumerate(data):
                     path[-1] = str(idx)
-                    # Switch between entity_id and _ref_id (relative position)
+                    # Switch between entity_id and entity_rel (relative position)
                     self._update_ref_ids(entity_data["entity_number"], entity_data, entity_ids, position_to_entity_id)
                     if self.remove_entity_number:
                         del entity_data["entity_number"]
@@ -353,20 +353,22 @@ class Processor:
                 if type(val) in COMPLEX_TYPES:
                     self._update_ref_ids(entity_number, val, entity_ids, position_to_entity_id, key)
             entity_id = data.get("entity_id")
-            ref_id = data.get("_ref_id")
+            ref_id = data.get("entity_rel")
             if entity_id is not None:
                 if ref_id is not None:
-                    raise ValueError(f"Cannot have both entity_id and _ref_id in {entity_number}")
+                    raise ValueError(f"Cannot have both entity_id and entity_rel in {entity_number}")
                 # Validate referenced entity_id, even if we don"t use it
                 ref_id = self.make_ref_id(entity_number, entity_id, entity_ids)
                 if self.use_refs:
                     del data["entity_id"]
-                    data["_ref_id"] = ref_id
+                    data["entity_rel"] = ref_id
+                    self.sort_dict(data)
             elif ref_id is not None:
                 entity_id = self.parse_ref_id(entity_number, ref_id, entity_ids, position_to_entity_id)
                 if not self.use_refs:
-                    del data["_ref_id"]
+                    del data["entity_rel"]
                     data["entity_id"] = entity_id
+                    self.sort_dict(data)
         elif type(data) == list:
             if len(data) > 0 and parent_key == "neighbours":
                 list_is_int = all(type(v) == int for v in data)
@@ -430,7 +432,11 @@ class Processor:
                 raise ValueError(f"Missing entity_number in {path_str()}")
             if new_id is None:
                 return None
+            # Entity number is created as a first key by Factorio, keep it consistent
+            tmp = entity_data.copy()
+            entity_data.clear()
             entity_data["entity_number"] = new_id
+            entity_data.update(tmp)
             eid = new_id
         else:
             assert new_id is None
