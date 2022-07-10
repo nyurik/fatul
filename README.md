@@ -4,7 +4,7 @@ Time to treat Factorio blueprints for what they really are -- software programs.
 
 * Work directly with clipboard - no need to `CTRL+C` and `CTRL+V`
 * Minimize text changes between blueprint versions
-  * Uses pretty but compact JSON format
+  * Uses human readable but compact JSON format
   * Sort entities by their x,y coordinates
   * Do not store `entity_number` (IDs) in the text files
   * Use relative entity position instead of `entity_id`
@@ -14,7 +14,7 @@ Time to treat Factorio blueprints for what they really are -- software programs.
 
 ```bash
 # Clone/download tools
-git clone https://github.com/nyurik/factorio-tools.git
+git clone https://github.com/nyurik/fatul.git
 cd factorio-tools
 
 # With Python, it is usually a good idea to use Python virtualenv,
