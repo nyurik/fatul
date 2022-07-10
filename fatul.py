@@ -526,7 +526,7 @@ def _make_iterencode():
     _encoder = json.JSONEncoder(ensure_ascii=False, check_circular=False, allow_nan=False,
                                 separators=(", ", ": ")).encode
     _indent = " " * 2
-    _item_separator = ", "
+    _item_separator = ","
     _key_separator = ": "
 
     def _encode_one_line(o):
