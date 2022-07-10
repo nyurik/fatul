@@ -130,10 +130,10 @@ def decode_cmd(args: argparse.Namespace):
 
 def decode(source: Path, destination: Path, verbose: bool, compact: bool, sort_mode: SortMode,
            ids_mode: IdsMode) -> None:
-    if pyperclip is None and (source is None or destination is None):
-        raise ValueError("pyperclip library is required to use clipboard. "
-                         "See README.md for installation instructions.")
     if source is None:
+        if pyperclip is None:
+            raise ValueError("pyperclip library is required to use clipboard. "
+                             "See README.md for installation instructions.")
         eprint("Reading blueprint string from clipboard")
         json_text = pyperclip.paste()
     elif str(source) == "-":
@@ -145,10 +145,7 @@ def decode(source: Path, destination: Path, verbose: bool, compact: bool, sort_m
         eprint(f"Reading blueprint string from {source}")
         json_text = source.read_text()
     data = Processor(verbose, sort_mode, ids_mode).decode(json_text)
-    if destination is None:
-        pyperclip.copy(to_pretty_json(data, compact))
-        eprint(f"Blueprint JSON was copied to clipboard.")
-    elif str(destination) == "-":
+    if str(destination) == "-":
         print(to_pretty_json(data, compact))
     else:
         write_files(data, destination, compact, verbose)
@@ -169,6 +166,9 @@ def encode_cmd(args: argparse.Namespace):
     processor = Processor(args.verbose, "none", "keep")
     encoded = processor.encode(data)
     if args.destination is None:
+        if pyperclip is None:
+            raise ValueError("pyperclip library is required to use clipboard. "
+                             "See README.md for installation instructions.")
         pyperclip.copy(encoded)
         eprint(f"Encoded blueprint string was copied to clipboard.")
     elif str(args.destination) == "-":
