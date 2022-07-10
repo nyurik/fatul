@@ -313,7 +313,7 @@ class Processor:
                         self._process_entity(data[idx], path, entity_ids, position_to_entity_id, new_id)
                 for idx, entity_data in enumerate(data):
                     path[-1] = str(idx)
-                    # Replace entity_id fields with the relative positions _ref_id or the absolute entity_id
+                    # Switch between entity_id and _ref_id (relative position)
                     self._update_ref_ids(entity_data["entity_number"], entity_data, entity_ids, position_to_entity_id)
                     if self.remove_entity_number:
                         del entity_data["entity_number"]
@@ -364,7 +364,7 @@ class Processor:
                     data["_ref_id"] = ref_id
             elif ref_id is not None:
                 entity_id = self.parse_ref_id(entity_number, ref_id, entity_ids, position_to_entity_id)
-                if self.use_refs:
+                if not self.use_refs:
                     del data["_ref_id"]
                     data["entity_id"] = entity_id
         elif type(data) == list:

@@ -48,7 +48,7 @@
             "red": [
               {
                 "circuit_id": 2,
-                "_ref_id": "2.5,-1"
+                "entity_id": 4
               }
             ]
           }
@@ -81,14 +81,14 @@
             "green": [
               {
                 "circuit_id": 2,
-                "_ref_id": "0,3"
+                "entity_id": 5
               }
             ]
           },
           "2": {
             "red": [
               {
-                "_ref_id": "-2.5,1"
+                "entity_id": 3
               }
             ]
           }
@@ -121,7 +121,7 @@
           "1": {
             "red": [
               {
-                "_ref_id": "2.5,-1"
+                "entity_id": 6
               }
             ]
           },
@@ -129,7 +129,7 @@
             "green": [
               {
                 "circuit_id": 1,
-                "_ref_id": "0,-3"
+                "entity_id": 4
               }
             ]
           }
@@ -160,7 +160,7 @@
             "red": [
               {
                 "circuit_id": 1,
-                "_ref_id": "-2.5,1"
+                "entity_id": 5
               }
             ]
           }
