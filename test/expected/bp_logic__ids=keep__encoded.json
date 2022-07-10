@@ -1,0 +1,174 @@
+{
+  "blueprint": {
+    "icons": [
+      {
+        "signal": {
+          "type": "item",
+          "name": "arithmetic-combinator"
+        },
+        "index": 1
+      }
+    ],
+    "entities": [
+      {
+        "entity_number": 1,
+        "name": "substation",
+        "position": {
+          "x": -308,
+          "y": -16
+        }
+      },
+      {
+        "entity_number": 2,
+        "name": "solar-panel",
+        "position": {
+          "x": -300.5,
+          "y": -14.5
+        }
+      },
+      {
+        "entity_number": 3,
+        "name": "small-lamp",
+        "position": {
+          "x": -307.5,
+          "y": -12.5
+        },
+        "control_behavior": {
+          "circuit_condition": {
+            "first_signal": {
+              "type": "virtual",
+              "name": "signal-X"
+            },
+            "constant": 21,
+            "comparator": "="
+          },
+          "use_colors": true
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "circuit_id": 2,
+                "_ref_id": "2.5,-1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "entity_number": 4,
+        "name": "arithmetic-combinator",
+        "position": {
+          "x": -305,
+          "y": -13.5
+        },
+        "direction": 6,
+        "control_behavior": {
+          "arithmetic_conditions": {
+            "first_signal": {
+              "type": "virtual",
+              "name": "signal-X"
+            },
+            "second_constant": 2,
+            "operation": "/",
+            "output_signal": {
+              "type": "virtual",
+              "name": "signal-X"
+            }
+          }
+        },
+        "connections": {
+          "1": {
+            "green": [
+              {
+                "circuit_id": 2,
+                "_ref_id": "0,3"
+              }
+            ]
+          },
+          "2": {
+            "red": [
+              {
+                "_ref_id": "-2.5,1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "entity_number": 5,
+        "name": "decider-combinator",
+        "position": {
+          "x": -305,
+          "y": -10.5
+        },
+        "direction": 6,
+        "control_behavior": {
+          "decider_conditions": {
+            "first_signal": {
+              "type": "virtual",
+              "name": "signal-X"
+            },
+            "constant": 0,
+            "comparator": ">",
+            "output_signal": {
+              "type": "virtual",
+              "name": "signal-everything"
+            },
+            "copy_count_from_input": true
+          }
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "_ref_id": "2.5,-1"
+              }
+            ]
+          },
+          "2": {
+            "green": [
+              {
+                "circuit_id": 1,
+                "_ref_id": "0,-3"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "entity_number": 6,
+        "name": "constant-combinator",
+        "position": {
+          "x": -302.5,
+          "y": -11.5
+        },
+        "direction": 4,
+        "control_behavior": {
+          "filters": [
+            {
+              "signal": {
+                "type": "virtual",
+                "name": "signal-X"
+              },
+              "count": 42,
+              "index": 1
+            }
+          ]
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "circuit_id": 1,
+                "_ref_id": "-2.5,1"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "item": "blueprint",
+    "version": 281479275675648
+  }
+}

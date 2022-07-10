@@ -1,0 +1,45 @@
+{
+  "blueprint": {
+    "icons": [
+      {
+        "signal": {
+          "type": "item",
+          "name": "substation"
+        },
+        "index": 1
+      }
+    ],
+    "entities": [
+      {
+        "entity_number": 1,
+        "name": "substation",
+        "position": {
+          "x": -308,
+          "y": -16
+        }
+      },
+      {
+        "entity_number": 2,
+        "name": "small-lamp",
+        "position": {
+          "x": -307.5,
+          "y": -12.5
+        },
+        "control_behavior": {
+          "circuit_condition": {
+            "first_signal": {
+              "type": "virtual",
+              "name": "signal-X"
+            },
+            "constant": 21,
+            "comparator": "="
+          },
+          "use_colors": true
+        }
+      }
+    ],
+    "item": "blueprint",
+    "version": 281479275675648
+  },
+  "index": 0
+}

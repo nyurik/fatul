@@ -1,0 +1,51 @@
+{
+  "blueprint": {
+    "icons": [
+      {
+        "signal": {
+          "type": "item",
+          "name": "big-electric-pole"
+        },
+        "index": 1
+      }
+    ],
+    "entities": [
+      {
+        "entity_number": 1,
+        "name": "big-electric-pole",
+        "position": {
+          "x": -290,
+          "y": -20
+        },
+        "neighbours": [
+          2,
+          3
+        ]
+      },
+      {
+        "entity_number": 2,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -284.5,
+          "y": -18.5
+        },
+        "neighbours": [
+          1
+        ]
+      },
+      {
+        "entity_number": 3,
+        "name": "medium-electric-pole",
+        "position": {
+          "x": -289.5,
+          "y": -14.5
+        },
+        "neighbours": [
+          1
+        ]
+      }
+    ],
+    "item": "blueprint",
+    "version": 281479275675648
+  }
+}
