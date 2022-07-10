@@ -15,7 +15,7 @@ Time to treat Factorio blueprints for what they really are -- software programs.
 ```bash
 # Clone/download tools
 git clone https://github.com/nyurik/fatul.git
-cd factorio-tools
+cd fatul
 
 # With Python, it is usually a good idea to use Python virtualenv,
 # but it will work without it too.
