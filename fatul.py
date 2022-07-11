@@ -3,9 +3,13 @@
 #
 # Copyright (C) 2022 by Yuri Astrakhan <YuriAstrakhan@gmail.com>.
 # This code is licensed under the MIT license.
-#
 # The _make_iterencode() code is based on the Python JSON library's code.
 #
+# See https://github.com/nyurik/fatul for new versions and upgrade instructions.
+#
+# This utility converts Factorio blueprints to an alternative JSON representation
+# that uses relative coordinates instead of entity_number values, and uses (x,y) sort.
+# This minimizes changes between blueprint versions.
 
 import argparse
 import base64
@@ -408,7 +412,9 @@ class Processor:
         if info is None:
             raise ValueError(f"Unrecognized entity ID {entity_id} in {entity.path}")
         if len(info.names) > 1:
-            raise ValueError(f"Entity ID {entity_id} in {entity.path} is not unique at {entity.pos}")
+            raise ValueError(f"Entity ID {entity_id} in {entity.path} is not unique at {entity.pos}. \n"
+                             f"We never anticipated this to happen with a real Factorio blueprint, "
+                             f"so please report it at https://github.com/nyurik/fatul/issues")
         x_diff = int_to_coord(info.pos[0] - entity.pos[0])
         y_diff = int_to_coord(info.pos[1] - entity.pos[1])
         return f"{x_diff},{y_diff}"
