@@ -64,7 +64,7 @@ python3 fatul.py decode -
 # Same as `decode`, but does not make any changes to JSON
 python3 fatul.py dump -
 
-# Convert a file (or dir) to a Factorio string and copy to clipboard. 
+# Convert a file (or dir) to a Factorio string and copy to clipboard.
 python3 fatul.py encode my_data.json
 
 # See help for more commands
@@ -72,7 +72,7 @@ python3 fatul.py --help
 python3 fatul.py decode --help
 ```
 
-The repository also contains a few shortcut scripts: `decode`, `encode`, and `dump`. 
+The repository also contains a few shortcut scripts: `decode`, `encode`, and `dump`.
 
 ## Upgrading between versions
 * Use the old version of fatul to convert a file/dir to a string
