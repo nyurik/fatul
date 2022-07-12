@@ -2,7 +2,7 @@
 
 Time to treat Factorio blueprints for what they really are -- software programs. And as such, they deserve to be version controlled, stored in git, and tested with CI, without making version diffs difficult to read.
 
-* Work directly with clipboard - no need to `CTRL+C` and `CTRL+V`
+* Work directly with clipboard - FaTul can use copied strings or place new strings into clipboard.
 * Minimize text changes between blueprint versions
   * Uses human-readable but compact JSON format
   * Sort entities by their x,y coordinates
