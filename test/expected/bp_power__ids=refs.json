@@ -13,8 +13,8 @@
       {
         "name": "big-electric-pole",
         "position": {
-          "x": -290,
-          "y": -20
+          "x": 0,
+          "y": 0
         },
         "neighbours": [
           "5.5,1.5",
@@ -24,8 +24,8 @@
       {
         "name": "small-electric-pole",
         "position": {
-          "x": -284.5,
-          "y": -18.5
+          "x": 5.5,
+          "y": 1.5
         },
         "neighbours": [
           "-5.5,-1.5"
@@ -34,8 +34,8 @@
       {
         "name": "medium-electric-pole",
         "position": {
-          "x": -289.5,
-          "y": -14.5
+          "x": 0.5,
+          "y": 5.5
         },
         "neighbours": [
           "-0.5,-5.5"
@@ -43,6 +43,8 @@
       }
     ],
     "item": "blueprint",
-    "version": 281479275675648
+    "version": 281479275675648,
+    "shift_x": -290,
+    "shift_y": -20
   }
 }

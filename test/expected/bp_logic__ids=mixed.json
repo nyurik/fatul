@@ -14,24 +14,24 @@
         "entity_number": 1,
         "name": "substation",
         "position": {
-          "x": -308,
-          "y": -16
+          "x": 0,
+          "y": 0
         }
       },
       {
         "entity_number": 2,
         "name": "solar-panel",
         "position": {
-          "x": -300.5,
-          "y": -14.5
+          "x": 7.5,
+          "y": 1.5
         }
       },
       {
         "entity_number": 3,
         "name": "small-lamp",
         "position": {
-          "x": -307.5,
-          "y": -12.5
+          "x": 0.5,
+          "y": 3.5
         },
         "control_behavior": {
           "circuit_condition": {
@@ -59,8 +59,8 @@
         "entity_number": 4,
         "name": "arithmetic-combinator",
         "position": {
-          "x": -305,
-          "y": -13.5
+          "x": 3,
+          "y": 2.5
         },
         "direction": 6,
         "control_behavior": {
@@ -99,8 +99,8 @@
         "entity_number": 5,
         "name": "decider-combinator",
         "position": {
-          "x": -305,
-          "y": -10.5
+          "x": 3,
+          "y": 5.5
         },
         "direction": 6,
         "control_behavior": {
@@ -140,8 +140,8 @@
         "entity_number": 6,
         "name": "constant-combinator",
         "position": {
-          "x": -302.5,
-          "y": -11.5
+          "x": 5.5,
+          "y": 4.5
         },
         "direction": 4,
         "control_behavior": {
@@ -169,6 +169,8 @@
       }
     ],
     "item": "blueprint",
-    "version": 281479275675648
+    "version": 281479275675648,
+    "shift_x": -308,
+    "shift_y": -16
   }
 }
