@@ -1,6 +1,6 @@
 # Factorio Blueprint GIT Tool (FaTul)
 
-Time to treat Factorio blueprints for what they really are -- software programs. And as such, they deserve to be version controlled, stored in git, and tested with CI, without making version diffs difficult to read.
+Treat Factorio blueprints for what they really are -- software programs: version control, git stored, and CI-tested. This tool makes it possible, and keeps version diffs easy to read.
 
 * Work directly with clipboard - FaTul can use copied strings or place new strings into clipboard.
 * Minimize text changes between blueprint versions
@@ -8,6 +8,7 @@ Time to treat Factorio blueprints for what they really are -- software programs.
   * Sort entities by their x,y coordinates
   * Do not store `entity_number` (IDs) in the text files
   * Use relative entity position instead of `entity_id`
+  * Normalize x,y coordinates  
 * Stores blueprint books as directories
 
 Copy `fatul.py` to your project and run `pip3 install pyperclip` if clipboard is needed for easiest usage. See [usage](#usage) below.
