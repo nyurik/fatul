@@ -302,18 +302,15 @@ class Processor:
     def _recurse(self, data: Any, path: List[str]) -> None:
         path.append("")
         if type(data) == dict:
-            has_entities = False
-            for key, val in data.items():
-                if type(val) in COMPLEX_TYPES:
-                    path[-1] = key
-                    if key == "entities" and type(val) == list and len(path) >= 2 and path[-2] == "blueprint":
-                        has_entities = True
-                    else:
+            if "blueprint" in data:
+                Blueprint(self, data).process(path)
+            else:
+                for key, val in data.items():
+                    if type(val) in COMPLEX_TYPES:
+                        path[-1] = key
                         self._recurse(val, path)
-            if has_entities:
-                EntitiesProcessor(self, data).process(path)
-            if self.sort_keys:
-                sort_dict(data)
+                if self.sort_keys:
+                    sort_dict(data)
         elif type(data) == list:
             for idx, val in enumerate(data):
                 if type(val) in COMPLEX_TYPES:
@@ -322,7 +319,7 @@ class Processor:
         path.pop()
 
 
-class EntitiesProcessor:
+class Blueprint:
     def __init__(self, processor: Processor, data: dict):
         self.normalize_pos = processor.normalize_pos
         self.sort_keys = processor.sort_keys
@@ -331,27 +328,32 @@ class EntitiesProcessor:
         self.use_rel_ids = processor.use_rel_ids
         self.generate_ids = processor.generate_ids
         self.data = data
+        self.blueprint = data['blueprint']
         self.entity_ids: Dict[EID, Entity] = {}
         self.position_to_entity_id: Dict[Position, EID] = {}
         # If these values are non-zero, positions will be de-shifted to original
-        self.shift_x = -self.data.get('shift_x', 0)
-        self.shift_y = -self.data.get('shift_y', 0)
+        self.shift_x = -self.blueprint.get('shift_x', 0)
+        self.shift_y = -self.blueprint.get('shift_y', 0)
         if self.normalize_pos:
             # If normalizing, the original data must not have had these shifts
             assert self.shift_x == 0
             assert self.shift_y == 0
 
     def process(self, path):
-        entities = self.data['entities']
+        entities = self.blueprint.get('entities')
+        if entities is None:
+            if self.sort_keys:
+                self.sort_dicts_rec(self.data)
+            return
         if self.normalize_pos:
             self.shift_x = self.calc_coordinate_shift(entities, "x")
             self.shift_y = self.calc_coordinate_shift(entities, "y")
             if (self.shift_x, self.shift_y) != (0, 0):
-                self.data['shift_x'] = self.shift_x
-                self.data['shift_y'] = self.shift_y
+                self.blueprint['shift_x'] = self.shift_x
+                self.blueprint['shift_y'] = self.shift_y
         else:
-            self.data.pop("shift_x", None)
-            self.data.pop("shift_y", None)
+            self.blueprint.pop("shift_x", None)
+            self.blueprint.pop("shift_y", None)
         if self.sort_entities:
             # Sort blueprint entities by their combined x,y position
             entities.sort(key=lambda v: position_to_morton_number(v.get("position")))
@@ -375,8 +377,8 @@ class EntitiesProcessor:
             self._update_relative_ids(entity_data["entity_number"], entity_data)
             if self.remove_entity_number:
                 del entity_data["entity_number"]
-            if self.sort_keys:
-                self._recurse_sort(entity_data)
+        if self.sort_keys:
+            self.sort_dicts_rec(self.data)
 
     def _process_entity(self, entity_data: dict, path: List[str], new_id: Optional[EID] = None) -> Optional[EID]:
         # Validate entity_number - must be unique in the blueprint entities list
@@ -499,16 +501,16 @@ class EntitiesProcessor:
             raise ValueError(f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {entity.path}")
         return entity_id
 
-    def _recurse_sort(self, data: Any) -> None:
+    def sort_dicts_rec(self, data: Any) -> None:
         if type(data) == dict:
             for val in data.values():
                 if type(val) in COMPLEX_TYPES:
-                    self._recurse_sort(val)
+                    self.sort_dicts_rec(val)
             sort_dict(data)
         elif type(data) == list:
             for val in data:
                 if type(val) in COMPLEX_TYPES:
-                    self._recurse_sort(val)
+                    self.sort_dicts_rec(val)
 
     @staticmethod
     def calc_coordinate_shift(entities: List[dict], coord: str):

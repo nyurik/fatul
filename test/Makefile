@@ -61,12 +61,11 @@ run-tests:
 	$(DECODE) -p --ids keep --sort all $(BUILD_DIR)/bp_logic__sort=all.json raw/bp_logic.txt
 
 	$(DUMP) -p $(BUILD_DIR)/rm_empty    raw/rm_empty.txt
-	$(ENCODE) $(BUILD_DIR)/rm_empty.json - | $(DUMP) -p $(BUILD_DIR)/rm_empty.json -
-
 	$(DUMP) -p $(BUILD_DIR)/bk_empty    raw/bk_empty.txt
-	$(ENCODE) $(BUILD_DIR)/bk_empty    - | $(DUMP) -p $(BUILD_DIR)/bk_empty.json -
 	$(DUMP) -p $(BUILD_DIR)/bk_empty_bp raw/bk_empty_bp.txt
-	$(ENCODE) $(BUILD_DIR)/bk_empty_bp - | $(DUMP) -p $(BUILD_DIR)/bk_empty_bp.json -
-	$(DUMP) -p $(BUILD_DIR)/bk_nested          raw/bk_nested.txt
-	$(DUMP) -p $(BUILD_DIR)/bk_nested_raw.json raw/bk_nested.txt
-	$(ENCODE) $(BUILD_DIR)/bk_nested   - | $(DUMP) -p $(BUILD_DIR)/bk_nested.json -
+	$(DUMP) -p $(BUILD_DIR)/bk_nested   raw/bk_nested.txt
+
+	$(ENCODE) $(BUILD_DIR)/rm_empty.json - | $(DUMP) -p $(BUILD_DIR)/rm_empty2.json -
+	$(ENCODE) $(BUILD_DIR)/bk_empty      - | $(DUMP) -p $(BUILD_DIR)/bk_empty.json -
+	$(ENCODE) $(BUILD_DIR)/bk_empty_bp   - | $(DUMP) -p $(BUILD_DIR)/bk_empty_bp.json -
+	$(ENCODE) $(BUILD_DIR)/bk_nested     - | $(DUMP) -p $(BUILD_DIR)/bk_nested.json -
