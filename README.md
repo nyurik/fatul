@@ -88,4 +88,4 @@ python3 fatul.py decode my_data
 
 ## Development
 
-Install [just](https://github.com/casey/just#installation).  Run `just` in the `test/` dir to run all sample tests and compares the output with the files in the `expected/` dir.  To update expected results, run `just rebuild-expected`.
+Install [just](https://github.com/casey/just#installation).  Run `just` to run all sample tests and compares the output with the files in the `test/expected` dir.  To update expected results, run `just rebuild-expected`.
