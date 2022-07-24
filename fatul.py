@@ -289,9 +289,7 @@ class Processor:
         files = set()
         for bp in blueprints:
             name = get_label(bp).lower()
-            name = re.sub(r"[/\\]+", "-", name)
-            name = re.sub(r"[.:]+", "-", name)
-            name = re.sub(r" +", "-", name)
+            name = re.sub(r"[ -/\\.:]+", "-", name)
             name = name.strip("_-. ")
             if name in files:
                 copy = 2
