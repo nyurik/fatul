@@ -8,7 +8,7 @@ Treat Factorio blueprints for what they really are -- software programs: version
   * Sort entities by their x,y coordinates
   * Do not store `entity_number` (IDs) in the text files
   * Use relative entity position instead of `entity_id`
-  * Normalize x,y coordinates  
+  * Normalize x,y coordinates
 * Stores blueprint books as directories
 
 Copy `fatul.py` to your project and run `pip3 install pyperclip` if clipboard is needed for easiest usage. See [usage](#usage) below.
@@ -73,7 +73,14 @@ python3 fatul.py --help
 python3 fatul.py decode --help
 ```
 
-The repository also contains a few shortcut scripts: `decode`, `encode`, and `dump`.
+The repository also contains a few shortcut scripts: `decode`, `encode`, and `dump`:
+
+```bash
+# this short command
+./decode my_data
+# is identical to the full command
+python3 fatul.py decode my_data
+```
 
 ## Upgrading between versions
 * Use the old version of fatul to convert a file/dir to a string
@@ -81,4 +88,4 @@ The repository also contains a few shortcut scripts: `decode`, `encode`, and `du
 
 ## Development
 
-Run `make test` in the `test/` dir to run all sample tests and compares the output with the files in the `expected/` dir.  To update expected results, run `make rebuild-expected`.
+Install [just](https://github.com/casey/just#installation).  Run `just` in the `test/` dir to run all sample tests and compares the output with the files in the `expected/` dir.  To update expected results, run `just rebuild-expected`.

@@ -297,26 +297,28 @@ class Processor:
         if self.verbose:
             eprint(f"Processing {get_label(data)}")
         self.generate_ids = generate_ids
-        return self._recurse(data, [])
+        self._recurse(data, [])
+        if self.sort_keys:
+            sort_dicts_rec(data)
 
     def _recurse(self, data: Any, path: List[str]) -> None:
-        path.append("")
         if type(data) == dict:
             if "blueprint" in data:
                 Blueprint(self, data).process(path)
             else:
+                path.append("")
                 for key, val in data.items():
                     if type(val) in COMPLEX_TYPES:
                         path[-1] = key
                         self._recurse(val, path)
-                if self.sort_keys:
-                    sort_dict(data)
+                path.pop()
         elif type(data) == list:
+            path.append("")
             for idx, val in enumerate(data):
                 if type(val) in COMPLEX_TYPES:
                     path[-1] = str(idx)
                     self._recurse(val, path)
-        path.pop()
+            path.pop()
 
 
 class Blueprint:
@@ -342,8 +344,6 @@ class Blueprint:
     def process(self, path):
         entities = self.blueprint.get('entities')
         if entities is None:
-            if self.sort_keys:
-                self.sort_dicts_rec(self.data)
             return
         if self.normalize_pos:
             self.shift_x = self.calc_coordinate_shift(entities, "x")
@@ -358,6 +358,7 @@ class Blueprint:
             # Sort blueprint entities by their combined x,y position
             entities.sort(key=lambda v: position_to_morton_number(v.get("position")))
         missing_ids = []
+        path.append("")
         for idx, entity_data in enumerate(entities):
             path[-1] = str(idx)
             # Save and possibly remove entity_id values
@@ -377,8 +378,7 @@ class Blueprint:
             self._update_relative_ids(entity_data["entity_number"], entity_data)
             if self.remove_entity_number:
                 del entity_data["entity_number"]
-        if self.sort_keys:
-            self.sort_dicts_rec(self.data)
+        path.pop()
 
     def _process_entity(self, entity_data: dict, path: List[str], new_id: Optional[EID] = None) -> Optional[EID]:
         # Validate entity_number - must be unique in the blueprint entities list
@@ -444,13 +444,11 @@ class Blueprint:
                 if self.use_rel_ids:
                     del data["entity_id"]
                     data["entity_rel"] = rel_id
-                    sort_dict(data)
             elif rel_id is not None:
                 entity_id = self.parse_rel_id(entity_number, rel_id)
                 if not self.use_rel_ids:
                     del data["entity_rel"]
                     data["entity_id"] = entity_id
-                    sort_dict(data)
         elif type(data) == list:
             if len(data) > 0 and parent_key == "neighbours":
                 list_is_int = all(type(v) == int for v in data)
@@ -501,17 +499,6 @@ class Blueprint:
             raise ValueError(f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {entity.path}")
         return entity_id
 
-    def sort_dicts_rec(self, data: Any) -> None:
-        if type(data) == dict:
-            for val in data.values():
-                if type(val) in COMPLEX_TYPES:
-                    self.sort_dicts_rec(val)
-            sort_dict(data)
-        elif type(data) == list:
-            for val in data:
-                if type(val) in COMPLEX_TYPES:
-                    self.sort_dicts_rec(val)
-
     @staticmethod
     def calc_coordinate_shift(entities: List[dict], coord: str):
         """Find the most "stable" value for the x or y position coordinate.
@@ -539,7 +526,19 @@ class Blueprint:
                     histogram[0])[0]
 
 
-def sort_dict(data):
+def sort_dicts_rec(data: Any) -> None:
+    if type(data) == dict:
+        for val in data.values():
+            if type(val) in COMPLEX_TYPES:
+                sort_dicts_rec(val)
+        sort_dict(data)
+    elif type(data) == list:
+        for val in data:
+            if type(val) in COMPLEX_TYPES:
+                sort_dicts_rec(val)
+
+
+def sort_dict(data) -> None:
     """Sort dict in place.
     Order first by group (prefix) followed by the key name alphabetically.
     Put special keys like 'name' first, then simple values (strings/ints/...) then dicts/lists."""
