@@ -291,12 +291,12 @@ class Processor:
             name = get_label(bp).lower()
             name = re.sub(r"[/\\]+", "-", name)
             name = re.sub(r"[.:]+", "-", name)
-            name = re.sub(r"  +", " ", name)
+            name = re.sub(r" +", "-", name)
             name = name.strip("_-. ")
             if name in files:
                 copy = 2
                 while True:
-                    test_name = f"{name} ({copy})"
+                    test_name = f"{name}_({copy})"
                     if test_name not in files:
                         name = test_name
                         break
