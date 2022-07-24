@@ -149,11 +149,12 @@ def decode(source: Path, destination: Path, verbose: bool, compact: bool, sort_m
             raise ValueError(f"Source file does not exist, or it is not a file: {source}")
         eprint(f"Reading blueprint string from {source}")
         json_text = source.read_text()
-    data = Processor(verbose, sort_mode, ids_mode, normalize_pos).decode(json_text)
+    processor = Processor(verbose, sort_mode, ids_mode, normalize_pos)
+    data = processor.decode(json_text)
     if str(destination) == "-":
         print(to_pretty_json(data, compact))
     else:
-        write_files(data, destination, compact, verbose)
+        processor.write_files(data, destination, compact)
 
 
 def encode_cmd(args: argparse.Namespace):
@@ -179,43 +180,6 @@ def encode_cmd(args: argparse.Namespace):
     else:
         eprint(f"Writing to {args.destination}")
         args.destination.write_text(encoded)
-
-
-def write_files(data: dict, dest: Path, compact: bool, verbose: bool) -> None:
-    label = get_label(data)
-    if "blueprint_book" not in data:
-        dest = dest.with_suffix(".json")
-        eprint(f"Writing {label} to {dest}")
-        dest.write_text(to_pretty_json(data, compact) + "\n")
-        return
-    if dest.is_file() or dest.suffix == ".json":
-        eprint(f"WARNING: Destination "
-               f"{'already exists' if dest.is_file() else 'has a .json extension, treating it as a file'}. "
-               f"Saving entire blueprint book as a single file to {dest}")
-        dest.write_text(to_pretty_json(data, compact) + "\n")
-        return
-    eprint(f"Creating {label} {dest}")
-    dest.mkdir(parents=True, exist_ok=True)
-    book = data["blueprint_book"]
-    blueprints = book.pop("blueprints", [])
-    (dest / "_metadata.json").write_text(to_pretty_json(data, compact) + "\n")
-    files = set()
-    for bp in blueprints:
-        name = get_label(bp).lower()
-        name = re.sub(r"[/\\]+", "-", name)
-        name = re.sub(r"[.:]+", "-", name)
-        name = re.sub(r"  +", " ", name)
-        name = name.strip("_-. ")
-        if name in files:
-            copy = 2
-            while True:
-                test_name = f"{name} ({copy})"
-                if test_name not in files:
-                    name = test_name
-                    break
-                copy += 1
-        files.add(name)
-        write_files(bp, dest / name, compact, verbose)
 
 
 def get_non_index_key(data):
@@ -287,6 +251,9 @@ class Processor:
         return data
 
     def encode(self, data: dict) -> str:
+        # if this was part of a blueprint book, get rid of the index in the output
+        # the index will be re-added by update_from_old() when decoding into the same file
+        data.pop('index', None)
         self.process(data, generate_ids=True)
         compressed = zlib.compress(bytes(to_json(data), "utf8"), level=9)
         return "0" + base64.b64encode(compressed).decode("utf8")
@@ -300,6 +267,56 @@ class Processor:
         self._recurse(data, [])
         if self.sort_keys:
             sort_dicts_rec(data)
+
+    def write_files(self, data: dict, dest: Path, compact: bool) -> None:
+        label = get_label(data)
+        if "blueprint_book" not in data:
+            dest = dest.with_suffix(".json")
+            eprint(f"Writing {label} to {dest}")
+            self.write_single_file(data, dest, compact)
+            return
+        if dest.is_file() or dest.suffix == ".json":
+            eprint(f"WARNING: Destination "
+                   f"{'already exists' if dest.is_file() else 'has a .json extension, treating it as a file'}. "
+                   f"Saving entire blueprint book as a single file to {dest}")
+            self.write_single_file(data, dest, compact)
+            return
+        eprint(f"Creating {label} {dest}")
+        dest.mkdir(parents=True, exist_ok=True)
+        book = data["blueprint_book"]
+        blueprints = book.pop("blueprints", [])
+        (dest / "_metadata.json").write_text(to_pretty_json(data, compact) + "\n")
+        files = set()
+        for bp in blueprints:
+            name = get_label(bp).lower()
+            name = re.sub(r"[/\\]+", "-", name)
+            name = re.sub(r"[.:]+", "-", name)
+            name = re.sub(r"  +", " ", name)
+            name = name.strip("_-. ")
+            if name in files:
+                copy = 2
+                while True:
+                    test_name = f"{name} ({copy})"
+                    if test_name not in files:
+                        name = test_name
+                        break
+                    copy += 1
+            files.add(name)
+            self.write_files(bp, dest / name, compact)
+
+    def write_single_file(self, data: dict, dest: Path, compact: bool) -> None:
+        if dest.exists():
+            old_data = json.loads(dest.read_text())
+            if 'index' not in data:
+                index = old_data.get('index', None)
+                if index is not None:
+                    data['index'] = index
+            else:
+                index = None
+            if self.verbose:
+                index_str = f" Restored index {index}." if index is not None else ""
+                eprint(f"Destination {dest} already exists, overwriting.{index_str}")
+        dest.write_text(to_pretty_json(data, compact) + "\n")
 
     def _recurse(self, data: Any, path: List[str]) -> None:
         if type(data) == dict:
@@ -319,6 +336,12 @@ class Processor:
                     path[-1] = str(idx)
                     self._recurse(val, path)
             path.pop()
+
+    def update_from_old(self, data: dict, old_data: dict):
+        if 'index' not in data:
+            index = old_data.get('index', None)
+            if index is not None:
+                data['index'] = index
 
 
 class Blueprint:

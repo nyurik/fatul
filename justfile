@@ -65,3 +65,6 @@ run-tests:
 	{{ENCODE}} {{BUILD_DIR}}/bk_empty      - | {{DUMP}} -p {{BUILD_DIR}}/bk_empty.json -
 	{{ENCODE}} {{BUILD_DIR}}/bk_empty_bp   - | {{DUMP}} -p {{BUILD_DIR}}/bk_empty_bp.json -
 	{{ENCODE}} {{BUILD_DIR}}/bk_nested     - | {{DUMP}} -p {{BUILD_DIR}}/bk_nested.json -
+
+	{{ENCODE}} {{BUILD_DIR}}/bk_nested/blueprint.json - | {{DUMP}} -p {{BUILD_DIR}}/bk_nested-bp.json -
+	{{ENCODE}} {{BUILD_DIR}}/bk_nested/blueprint.json - | {{DECODE}} -p {{BUILD_DIR}}/bk_nested/blueprint.json -
