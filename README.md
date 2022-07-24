@@ -10,7 +10,7 @@ Treat Factorio blueprints for what they really are -- software programs: version
   * Use relative entity position instead of `entity_id`
   * Normalize x,y coordinates
 * Stores blueprint books as directories
-* If a file was part of a blueprint book, encoding it produces a single blueprint (removes index). Decoding a blueprint to the same file will automatically re-add index from the old version of the file. This allows working on individual blueprints without loosing their place in the blueprint book.
+* Index recovery: encoding a single file from a book dir removes the index (blueprint's position in a book). Decoding the string back to the same file restores that index. This allows import/export of on an individual blueprint without loosing its place in a book.
 
 Copy `fatul.py` to your project and run `pip3 install pyperclip` if clipboard is needed for easiest usage. See [usage](#usage) below.
 
