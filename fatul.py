@@ -79,6 +79,9 @@ def main():
                          help="Use standard JSON formatting instead of compact")
     decoder.add_argument("--no-shift", dest="normalize_pos", default=True, action="store_false",
                          help="Do not change entity positions. If not set, FaTul will attempt to normalize x,y values.")
+    decoder.add_argument("--no-index-merge", dest="merge_index", default=True, action="store_false",
+                         help="If the output file already exists and contains a book index, and the current data "
+                              "does not, do not copy old index to the new file")
     decoder.add_argument("destination", type=Path,
                          help="The destination file or directory to write to. "
                               "Use '-' to write to STDOUT as a single formatted JSON.")
@@ -128,15 +131,17 @@ def main():
 
 
 def dump_cmd(args: argparse.Namespace):
-    decode(args.source, args.destination, args.verbose, args.compact, "none", "keep", normalize_pos=False)
+    decode(args.source, args.destination, args.verbose, args.compact, "none", "keep",
+           normalize_pos=False, merge_index=False)
 
 
 def decode_cmd(args: argparse.Namespace):
-    decode(args.source, args.destination, args.verbose, args.compact, args.sort, args.ids, args.normalize_pos)
+    decode(args.source, args.destination, args.verbose, args.compact, args.sort, args.ids,
+           args.normalize_pos, args.merge_index)
 
 
 def decode(source: Path, destination: Path, verbose: bool, compact: bool, sort_mode: SortMode,
-           ids_mode: IdsMode, normalize_pos: bool) -> None:
+           ids_mode: IdsMode, normalize_pos: bool, merge_index: bool) -> None:
     if source is None:
         assert_clipboard()
         eprint("Reading blueprint string from clipboard")
@@ -149,12 +154,12 @@ def decode(source: Path, destination: Path, verbose: bool, compact: bool, sort_m
             raise ValueError(f"Source file does not exist, or it is not a file: {source}")
         eprint(f"Reading blueprint string from {source}")
         json_text = source.read_text()
-    processor = Processor(verbose, sort_mode, ids_mode, normalize_pos)
+    processor = Processor(verbose, sort_mode, ids_mode, normalize_pos, compact, merge_index)
     data = processor.decode(json_text)
     if str(destination) == "-":
         print(to_pretty_json(data, compact))
     else:
-        processor.write_files(data, destination, compact)
+        processor.write_files(data, destination)
 
 
 def encode_cmd(args: argparse.Namespace):
@@ -169,7 +174,8 @@ def encode_cmd(args: argparse.Namespace):
         data = read_files(args.source, args.verbose)
     else:
         raise ValueError(f"Invalid source file or directory: {args.source}")
-    processor = Processor(args.verbose, "none", "keep", normalize_pos=False)
+    processor = Processor(args.verbose, "none", "keep", normalize_pos=False,
+                          compact=False, merge_index=False)
     encoded = processor.encode(data)
     if args.destination is None:
         assert_clipboard()
@@ -234,7 +240,8 @@ class Entity:
 
 
 class Processor:
-    def __init__(self, verbose: bool, sort_mode: SortMode, ids_mode: IdsMode, normalize_pos: bool):
+    def __init__(self, verbose: bool, sort_mode: SortMode, ids_mode: IdsMode, normalize_pos: bool,
+                 compact: bool, merge_index: bool):
         self.verbose = verbose
         self.normalize_pos = normalize_pos
         self.sort_keys = sort_mode == "all" or sort_mode == "keys"
@@ -242,6 +249,8 @@ class Processor:
         self.remove_entity_number = ids_mode == "refs"
         self.use_rel_ids = ids_mode != "keep"
         self.generate_ids = False
+        self.compact = compact
+        self.merge_index = merge_index
 
     def decode(self, json_text: str) -> dict:
         if not json_text.startswith("0"):
@@ -252,8 +261,8 @@ class Processor:
 
     def encode(self, data: dict) -> str:
         # if this was part of a blueprint book, get rid of the index in the output
-        # the index will be re-added by update_from_old() when decoding into the same file
-        data.pop('index', None)
+        # the index will be re-added by migrate_old_data() when decoding into the same file
+        data.pop("index", None)
         self.process(data, generate_ids=True)
         compressed = zlib.compress(bytes(to_json(data), "utf8"), level=9)
         return "0" + base64.b64encode(compressed).decode("utf8")
@@ -268,53 +277,63 @@ class Processor:
         if self.sort_keys:
             sort_dicts_rec(data)
 
-    def write_files(self, data: dict, dest: Path, compact: bool) -> None:
+    def write_files(self, data: dict, dest: Path) -> None:
         label = get_label(data)
         if "blueprint_book" not in data:
             dest = dest.with_suffix(".json")
             eprint(f"Writing {label} to {dest}")
-            self.write_single_file(data, dest, compact)
+            self.write_single_file(data, dest)
             return
         if dest.is_file() or dest.suffix == ".json":
             eprint(f"WARNING: Destination "
                    f"{'already exists' if dest.is_file() else 'has a .json extension, treating it as a file'}. "
                    f"Saving entire blueprint book as a single file to {dest}")
-            self.write_single_file(data, dest, compact)
+            self.write_single_file(data, dest)
             return
         eprint(f"Creating {label} {dest}")
         dest.mkdir(parents=True, exist_ok=True)
         book = data["blueprint_book"]
         blueprints = book.pop("blueprints", [])
-        (dest / "_metadata.json").write_text(to_pretty_json(data, compact) + "\n")
+        (dest / "_metadata.json").write_text(to_pretty_json(data, self.compact) + "\n")
         files = set()
         for bp in blueprints:
+            is_dir = "blueprint_book" in bp
             name = get_label(bp).lower()
-            name = re.sub(r"[ \-/\\.:]+", "-", name)
+            name = re.sub(r"[/\\.:]+", "-", name)
+            name = re.sub(r"  +", " ", name)
+            if is_dir:
+                # Books become directories, which are a bit nicer without the spaces
+                name = name.replace(" ", "-")
+            name = re.sub(r"-+", "-", name)
             name = name.strip("_-. ")
             if name in files:
                 copy = 2
                 while True:
-                    test_name = f"{name}_({copy})"
+                    test_name = f"{name}{'_' if is_dir else ' '}({copy})"
                     if test_name not in files:
                         name = test_name
                         break
                     copy += 1
             files.add(name)
-            self.write_files(bp, dest / name, compact)
+            self.write_files(bp, dest / name)
 
-    def write_single_file(self, data: dict, dest: Path, compact: bool) -> None:
+    def write_single_file(self, data: dict, dest: Path) -> None:
         if dest.exists():
+            self.migrate_old_data(data, dest)
+        dest.write_text(to_pretty_json(data, self.compact) + "\n")
+
+    def migrate_old_data(self, new_data: dict, dest: Path) -> None:
+        msg = f"Overwriting {dest} with new data"
+        old_data = None
+        if self.merge_index:
             old_data = json.loads(dest.read_text())
-            if 'index' not in data:
-                index = old_data.get('index', None)
-                if index is not None:
-                    data['index'] = index
-            else:
-                index = None
-            if self.verbose:
-                index_str = f" Restored index {index}." if index is not None else ""
-                eprint(f"Destination {dest} already exists, overwriting.{index_str}")
-        dest.write_text(to_pretty_json(data, compact) + "\n")
+        if self.merge_index and "index" not in new_data:
+            index = old_data.get("index", None)
+            if index is not None:
+                new_data["index"] = index
+                msg += f", index restored to {index}"
+        if self.verbose:
+            eprint(msg)
 
     def _recurse(self, data: Any, path: List[str]) -> None:
         if type(data) == dict:
@@ -335,12 +354,6 @@ class Processor:
                     self._recurse(val, path)
             path.pop()
 
-    def update_from_old(self, data: dict, old_data: dict):
-        if 'index' not in data:
-            index = old_data.get('index', None)
-            if index is not None:
-                data['index'] = index
-
 
 class Blueprint:
     def __init__(self, processor: Processor, data: dict):
@@ -351,36 +364,36 @@ class Blueprint:
         self.use_rel_ids = processor.use_rel_ids
         self.generate_ids = processor.generate_ids
         self.data = data
-        self.blueprint = data['blueprint']
+        self.blueprint = data["blueprint"]
+        self.entities = self.blueprint.get("entities")
         self.entity_ids: Dict[EID, Entity] = {}
         self.position_to_entity_id: Dict[Position, EID] = {}
         # If these values are non-zero, positions will be de-shifted to original
-        self.shift_x = -self.blueprint.get('shift_x', 0)
-        self.shift_y = -self.blueprint.get('shift_y', 0)
+        self.shift_x = -self.blueprint.get("shift_x", 0)
+        self.shift_y = -self.blueprint.get("shift_y", 0)
         if self.normalize_pos:
             # If normalizing, the original data must not have had these shifts
             assert self.shift_x == 0
             assert self.shift_y == 0
 
     def process(self, path):
-        entities = self.blueprint.get('entities')
-        if entities is None:
+        if self.entities is None:
             return
         if self.normalize_pos:
-            self.shift_x = self.calc_coordinate_shift(entities, "x")
-            self.shift_y = self.calc_coordinate_shift(entities, "y")
+            self.shift_x = self.calc_coordinate_shift(self.entities, "x")
+            self.shift_y = self.calc_coordinate_shift(self.entities, "y")
             if (self.shift_x, self.shift_y) != (0, 0):
-                self.blueprint['shift_x'] = self.shift_x
-                self.blueprint['shift_y'] = self.shift_y
+                self.blueprint["shift_x"] = self.shift_x
+                self.blueprint["shift_y"] = self.shift_y
         else:
             self.blueprint.pop("shift_x", None)
             self.blueprint.pop("shift_y", None)
         if self.sort_entities:
             # Sort blueprint entities by their combined x,y position
-            entities.sort(key=lambda v: position_to_morton_number(v.get("position")))
+            self.entities.sort(key=lambda v: position_to_morton_number(v.get("position")))
         missing_ids = []
         path.append("")
-        for idx, entity_data in enumerate(entities):
+        for idx, entity_data in enumerate(self.entities):
             path[-1] = str(idx)
             # Save and possibly remove entity_id values
             eid = self._process_entity(entity_data, path)
@@ -392,8 +405,8 @@ class Blueprint:
                 path[-1] = str(idx)
                 while new_id in self.entity_ids:
                     new_id += 1
-                self._process_entity(entities[idx], path, new_id)
-        for idx, entity_data in enumerate(entities):
+                self._process_entity(self.entities[idx], path, new_id)
+        for idx, entity_data in enumerate(self.entities):
             path[-1] = str(idx)
             # Switch between entity_id and entity_rel (relative position)
             self._update_relative_ids(entity_data["entity_number"], entity_data)
@@ -577,7 +590,7 @@ def sort_dict(data) -> None:
         data[k] = old_data[k]
 
 
-def position_to_morton_number(position):
+def position_to_morton_number(position: dict) -> int:
     # Create a single interleaved number (Morton number) to use as a sorting key.
     # This approach tries to keep features that are nearby in the X,Y plane near each other in a list.
     # Adapted from http://graphics.stanford.edu/~seander/bithacks.html#InterleaveBMN
