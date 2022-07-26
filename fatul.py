@@ -598,10 +598,10 @@ class Blueprint:
                 position = entity["position"]
                 position["x"] += adjust_x
                 position["y"] += adjust_y
-        if adjust_by is None:
+        if adjust_by is None or (target_x == 0 and target_y == 0):
             self.blueprint.pop("shift_x", None)
             self.blueprint.pop("shift_y", None)
-        elif target_x != 0 or target_y != 0:
+        else:
             self.blueprint["shift_x"] = target_x
             self.blueprint["shift_y"] = target_y
         if self.sort_entities:
@@ -637,7 +637,7 @@ class Blueprint:
         diffs = []
         for shift in shift_range:
             diffs.append((shift, self.calc_diff_score(old_hist, new_hist, shift)))
-        res = min(diffs, key=lambda x: x[1])[0]
+        res = -min(diffs, key=lambda x: x[1])[0]
         return res
 
     @staticmethod
