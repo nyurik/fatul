@@ -8,9 +8,9 @@ Treat Factorio blueprints for what they really are -- software programs: version
   * Sort entities by their x,y coordinates
   * Do not store `entity_number` (IDs) in the text files
   * Use relative entity position instead of `entity_id`
-  * Normalize x,y coordinates
+  * Minimize entity position changes between blueprint versions by attempting to detect entity x,y changes, and storing a global x,y shift instead of changing individual entity positions.
 * Stores blueprint books as directories
-* Index recovery: encoding a single file from a book dir removes the index (blueprint's position in a book). Decoding the string back to the same file restores that index. This allows import/export of on an individual blueprint without loosing its place in a book.
+* Edit individual blueprint even if it is part of a book. Decoding to the same location will restore the book index from the prior version.
 
 Copy `fatul.py` to your project and run `pip3 install pyperclip` if clipboard is needed for easiest usage. See [usage](#usage) below.
 

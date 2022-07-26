@@ -1,0 +1,264 @@
+{
+  "blueprint": {
+    "icons": [
+      {"signal": {"type": "item", "name": "assembling-machine-1"}, "index": 1},
+      {"signal": {"type": "item", "name": "transport-belt"}, "index": 2}
+    ],
+    "entities": [
+      {
+        "entity_number": 1,
+        "name": "underground-belt",
+        "position": {"x": 166.5, "y": -41.5},
+        "type": "input"
+      },
+      {"entity_number": 2, "name": "transport-belt", "position": {"x": 166.5, "y": -40.5}},
+      {
+        "entity_number": 3,
+        "name": "assembling-machine-1",
+        "position": {"x": 169.5, "y": -40.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {
+        "entity_number": 4,
+        "name": "underground-belt",
+        "position": {"x": 172.5, "y": -41.5},
+        "type": "input"
+      },
+      {"entity_number": 5, "name": "transport-belt", "position": {"x": 172.5, "y": -40.5}},
+      {
+        "entity_number": 6,
+        "name": "assembling-machine-1",
+        "position": {"x": 175.5, "y": -40.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 7, "name": "transport-belt", "position": {"x": 178.5, "y": -40.5}},
+      {
+        "entity_number": 8,
+        "name": "underground-belt",
+        "position": {"x": 178.5, "y": -41.5},
+        "type": "input"
+      },
+      {"entity_number": 9, "name": "inserter", "position": {"x": 167.5, "y": -39.5}, "direction": 2},
+      {"entity_number": 10, "name": "inserter", "position": {"x": 167.5, "y": -38.5}, "direction": 2},
+      {"entity_number": 11, "name": "transport-belt", "position": {"x": 166.5, "y": -38.5}},
+      {"entity_number": 12, "name": "transport-belt", "position": {"x": 166.5, "y": -39.5}},
+      {
+        "entity_number": 13,
+        "name": "assembling-machine-1",
+        "position": {"x": 169.5, "y": -37.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 14, "name": "inserter", "position": {"x": 171.5, "y": -38.5}, "direction": 2},
+      {"entity_number": 15, "name": "inserter", "position": {"x": 171.5, "y": -39.5}, "direction": 2},
+      {"entity_number": 16, "name": "inserter", "position": {"x": 173.5, "y": -39.5}, "direction": 6},
+      {"entity_number": 17, "name": "inserter", "position": {"x": 173.5, "y": -38.5}, "direction": 6},
+      {"entity_number": 18, "name": "transport-belt", "position": {"x": 172.5, "y": -38.5}},
+      {"entity_number": 19, "name": "transport-belt", "position": {"x": 172.5, "y": -39.5}},
+      {
+        "entity_number": 20,
+        "name": "assembling-machine-1",
+        "position": {"x": 175.5, "y": -37.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 21, "name": "inserter", "position": {"x": 177.5, "y": -38.5}, "direction": 6},
+      {"entity_number": 22, "name": "inserter", "position": {"x": 177.5, "y": -39.5}, "direction": 6},
+      {"entity_number": 23, "name": "transport-belt", "position": {"x": 178.5, "y": -39.5}},
+      {"entity_number": 24, "name": "transport-belt", "position": {"x": 178.5, "y": -38.5}},
+      {
+        "entity_number": 25,
+        "name": "small-electric-pole",
+        "position": {"x": 167.5, "y": -37.5},
+        "neighbours": [28, 29, 59]
+      },
+      {"entity_number": 26, "name": "transport-belt", "position": {"x": 166.5, "y": -36.5}},
+      {"entity_number": 27, "name": "transport-belt", "position": {"x": 166.5, "y": -37.5}},
+      {
+        "entity_number": 28,
+        "name": "small-electric-pole",
+        "position": {"x": 171.5, "y": -37.5},
+        "neighbours": [25, 32, 62, 63]
+      },
+      {
+        "entity_number": 29,
+        "name": "small-electric-pole",
+        "position": {"x": 173.5, "y": -37.5},
+        "neighbours": [25, 32, 62, 63]
+      },
+      {"entity_number": 30, "name": "transport-belt", "position": {"x": 172.5, "y": -36.5}},
+      {"entity_number": 31, "name": "transport-belt", "position": {"x": 172.5, "y": -37.5}},
+      {
+        "entity_number": 32,
+        "name": "small-electric-pole",
+        "position": {"x": 177.5, "y": -37.5},
+        "neighbours": [28, 29, 66]
+      },
+      {"entity_number": 33, "name": "transport-belt", "position": {"x": 178.5, "y": -37.5}},
+      {"entity_number": 34, "name": "transport-belt", "position": {"x": 178.5, "y": -36.5}},
+      {"entity_number": 35, "name": "transport-belt", "position": {"x": 166.5, "y": -34.5}},
+      {"entity_number": 36, "name": "transport-belt", "position": {"x": 166.5, "y": -35.5}},
+      {
+        "entity_number": 37,
+        "name": "assembling-machine-1",
+        "position": {"x": 169.5, "y": -34.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 38, "name": "transport-belt", "position": {"x": 172.5, "y": -34.5}},
+      {"entity_number": 39, "name": "transport-belt", "position": {"x": 172.5, "y": -35.5}},
+      {
+        "entity_number": 40,
+        "name": "assembling-machine-1",
+        "position": {"x": 175.5, "y": -34.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 41, "name": "transport-belt", "position": {"x": 178.5, "y": -35.5}},
+      {"entity_number": 42, "name": "transport-belt", "position": {"x": 178.5, "y": -34.5}},
+      {"entity_number": 43, "name": "inserter", "position": {"x": 167.5, "y": -33.5}, "direction": 2},
+      {"entity_number": 44, "name": "inserter", "position": {"x": 167.5, "y": -32.5}, "direction": 2},
+      {"entity_number": 45, "name": "transport-belt", "position": {"x": 166.5, "y": -32.5}},
+      {"entity_number": 46, "name": "transport-belt", "position": {"x": 166.5, "y": -33.5}},
+      {
+        "entity_number": 47,
+        "name": "assembling-machine-1",
+        "position": {"x": 169.5, "y": -31.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 48, "name": "inserter", "position": {"x": 171.5, "y": -32.5}, "direction": 2},
+      {"entity_number": 49, "name": "inserter", "position": {"x": 171.5, "y": -33.5}, "direction": 2},
+      {"entity_number": 50, "name": "inserter", "position": {"x": 173.5, "y": -33.5}, "direction": 6},
+      {"entity_number": 51, "name": "inserter", "position": {"x": 173.5, "y": -32.5}, "direction": 6},
+      {"entity_number": 52, "name": "transport-belt", "position": {"x": 172.5, "y": -32.5}},
+      {"entity_number": 53, "name": "transport-belt", "position": {"x": 172.5, "y": -33.5}},
+      {
+        "entity_number": 54,
+        "name": "assembling-machine-1",
+        "position": {"x": 175.5, "y": -31.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 55, "name": "inserter", "position": {"x": 177.5, "y": -32.5}, "direction": 6},
+      {"entity_number": 56, "name": "inserter", "position": {"x": 177.5, "y": -33.5}, "direction": 6},
+      {"entity_number": 57, "name": "transport-belt", "position": {"x": 178.5, "y": -33.5}},
+      {"entity_number": 58, "name": "transport-belt", "position": {"x": 178.5, "y": -32.5}},
+      {
+        "entity_number": 59,
+        "name": "small-electric-pole",
+        "position": {"x": 167.5, "y": -31.5},
+        "neighbours": [25, 62, 63, 95]
+      },
+      {"entity_number": 60, "name": "transport-belt", "position": {"x": 166.5, "y": -30.5}},
+      {"entity_number": 61, "name": "transport-belt", "position": {"x": 166.5, "y": -31.5}},
+      {
+        "entity_number": 62,
+        "name": "small-electric-pole",
+        "position": {"x": 171.5, "y": -31.5},
+        "neighbours": [59, 28, 29, 66, 96]
+      },
+      {
+        "entity_number": 63,
+        "name": "small-electric-pole",
+        "position": {"x": 173.5, "y": -31.5},
+        "neighbours": [59, 28, 29, 66, 97]
+      },
+      {"entity_number": 64, "name": "transport-belt", "position": {"x": 172.5, "y": -30.5}},
+      {"entity_number": 65, "name": "transport-belt", "position": {"x": 172.5, "y": -31.5}},
+      {
+        "entity_number": 66,
+        "name": "small-electric-pole",
+        "position": {"x": 177.5, "y": -31.5},
+        "neighbours": [62, 32, 63, 100]
+      },
+      {"entity_number": 67, "name": "transport-belt", "position": {"x": 178.5, "y": -31.5}},
+      {"entity_number": 68, "name": "transport-belt", "position": {"x": 178.5, "y": -30.5}},
+      {"entity_number": 69, "name": "transport-belt", "position": {"x": 166.5, "y": -28.5}},
+      {"entity_number": 70, "name": "transport-belt", "position": {"x": 166.5, "y": -29.5}},
+      {
+        "entity_number": 71,
+        "name": "assembling-machine-1",
+        "position": {"x": 169.5, "y": -28.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 72, "name": "transport-belt", "position": {"x": 172.5, "y": -28.5}},
+      {"entity_number": 73, "name": "transport-belt", "position": {"x": 172.5, "y": -29.5}},
+      {
+        "entity_number": 74,
+        "name": "assembling-machine-1",
+        "position": {"x": 175.5, "y": -28.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 75, "name": "transport-belt", "position": {"x": 178.5, "y": -29.5}},
+      {"entity_number": 76, "name": "transport-belt", "position": {"x": 178.5, "y": -28.5}},
+      {"entity_number": 77, "name": "inserter", "position": {"x": 167.5, "y": -27.5}, "direction": 2},
+      {"entity_number": 78, "name": "inserter", "position": {"x": 167.5, "y": -26.5}, "direction": 2},
+      {"entity_number": 79, "name": "transport-belt", "position": {"x": 166.5, "y": -26.5}},
+      {"entity_number": 80, "name": "transport-belt", "position": {"x": 166.5, "y": -27.5}},
+      {
+        "entity_number": 81,
+        "name": "assembling-machine-1",
+        "position": {"x": 169.5, "y": -25.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 82, "name": "inserter", "position": {"x": 171.5, "y": -26.5}, "direction": 2},
+      {"entity_number": 83, "name": "inserter", "position": {"x": 171.5, "y": -27.5}, "direction": 2},
+      {"entity_number": 84, "name": "inserter", "position": {"x": 173.5, "y": -27.5}, "direction": 6},
+      {"entity_number": 85, "name": "inserter", "position": {"x": 173.5, "y": -26.5}, "direction": 6},
+      {"entity_number": 86, "name": "transport-belt", "position": {"x": 172.5, "y": -26.5}},
+      {"entity_number": 87, "name": "transport-belt", "position": {"x": 172.5, "y": -27.5}},
+      {
+        "entity_number": 88,
+        "name": "assembling-machine-1",
+        "position": {"x": 175.5, "y": -25.5},
+        "recipe": "iron-gear-wheel"
+      },
+      {"entity_number": 89, "name": "inserter", "position": {"x": 177.5, "y": -26.5}, "direction": 6},
+      {"entity_number": 90, "name": "inserter", "position": {"x": 177.5, "y": -27.5}, "direction": 6},
+      {"entity_number": 91, "name": "transport-belt", "position": {"x": 178.5, "y": -27.5}},
+      {"entity_number": 92, "name": "transport-belt", "position": {"x": 178.5, "y": -26.5}},
+      {"entity_number": 93, "name": "transport-belt", "position": {"x": 166.5, "y": -25.5}},
+      {
+        "entity_number": 94,
+        "name": "underground-belt",
+        "position": {"x": 166.5, "y": -24.5},
+        "type": "output"
+      },
+      {
+        "entity_number": 95,
+        "name": "small-electric-pole",
+        "position": {"x": 167.5, "y": -25.5},
+        "neighbours": [59, 96, 97]
+      },
+      {
+        "entity_number": 96,
+        "name": "small-electric-pole",
+        "position": {"x": 171.5, "y": -25.5},
+        "neighbours": [95, 62, 100]
+      },
+      {
+        "entity_number": 97,
+        "name": "small-electric-pole",
+        "position": {"x": 173.5, "y": -25.5},
+        "neighbours": [95, 63, 100]
+      },
+      {
+        "entity_number": 98,
+        "name": "underground-belt",
+        "position": {"x": 172.5, "y": -24.5},
+        "type": "output"
+      },
+      {"entity_number": 99, "name": "transport-belt", "position": {"x": 172.5, "y": -25.5}},
+      {
+        "entity_number": 100,
+        "name": "small-electric-pole",
+        "position": {"x": 177.5, "y": -25.5},
+        "neighbours": [96, 66, 97]
+      },
+      {
+        "entity_number": 101,
+        "name": "underground-belt",
+        "position": {"x": 178.5, "y": -24.5},
+        "type": "output"
+      },
+      {"entity_number": 102, "name": "transport-belt", "position": {"x": 178.5, "y": -25.5}}
+    ],
+    "item": "blueprint",
+    "version": 281479275675648
+  }
+}

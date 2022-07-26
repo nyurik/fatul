@@ -83,6 +83,14 @@
         }
       },
       {
+        "name": "solar-panel",
+        "entity_number": 2,
+        "position": {
+          "x": 7.5,
+          "y": 1.5
+        }
+      },
+      {
         "name": "decider-combinator",
         "direction": 6,
         "entity_number": 5,
@@ -121,14 +129,6 @@
         "position": {
           "x": 3,
           "y": 5.5
-        }
-      },
-      {
-        "name": "solar-panel",
-        "entity_number": 2,
-        "position": {
-          "x": 7.5,
-          "y": 1.5
         }
       },
       {

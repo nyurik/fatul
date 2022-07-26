@@ -29,6 +29,7 @@
         },
         "position": {"x": 3, "y": 2.5}
       },
+      {"name": "solar-panel", "position": {"x": 7.5, "y": 1.5}},
       {
         "name": "decider-combinator",
         "direction": 6,
@@ -47,7 +48,6 @@
         },
         "position": {"x": 3, "y": 5.5}
       },
-      {"name": "solar-panel", "position": {"x": 7.5, "y": 1.5}},
       {
         "name": "constant-combinator",
         "direction": 4,

@@ -18,8 +18,8 @@ import re
 import sys
 import textwrap
 import zlib
-from collections import defaultdict
 from dataclasses import dataclass
+from itertools import groupby
 from pathlib import Path
 from traceback import format_exception
 from typing import List, Any, Literal, NewType, Tuple, Dict, get_args, Union, Optional
@@ -29,6 +29,28 @@ try:
     import pyperclip
 except ImportError:
     pyperclip = None
+
+# Larger entities are more likely to stay in the same place, so boost their score penalty
+ENTITY_SCORES = {
+    "assembling-machine-1": 2,
+    "assembling-machine-2": 2,
+    "assembling-machine-3": 2,
+    "beacon": 3,
+    "centrifuge": 3,
+    "chemical-plant": 3,
+    "electric-furnace": 3,
+    "lab": 3,
+    "nuclear-reactor": 5,
+    "oil-refinery": 5,
+    "railway": 2,
+    "roboport": 4,
+    "rocket-silo": 9,
+    "steam-engine": 4,
+    "steam-turbine": 4,
+    "steel-furnace": 2,
+    "stone-furnace": 2,
+    "substation": 2,
+}
 
 MAX_LINE_LENGTH = 100
 COORD_MULTIPLIER = 16
@@ -46,6 +68,8 @@ IdsMode = Literal["refs", "mixed", "keep"]
 SortMode = Literal["all", "entities", "keys", "none"]
 Position = NewType("Position", Tuple[int, int])
 EID = NewType("EID", int)
+HistogramKey = NewType("HistogramKey", Union[int, Tuple[int, str]])
+Histogram = NewType("Histogram", List[Tuple[HistogramKey, int]])
 
 
 def main():
@@ -77,11 +101,16 @@ def main():
                             * none     - do not sort."""))
     decoder.add_argument("--pretty", "-p", dest="compact", default=True, action="store_false",
                          help="Use standard JSON formatting instead of compact")
-    decoder.add_argument("--no-shift", dest="normalize_pos", default=True, action="store_false",
+    decoder.add_argument("--no-shift", dest="normalize_shift", default=True, action="store_false",
                          help="Do not change entity positions. If not set, FaTul will attempt to normalize x,y values.")
     decoder.add_argument("--no-index-merge", dest="merge_index", default=True, action="store_false",
                          help="If the output file already exists and contains a book index, and the current data "
                               "does not, do not copy old index to the new file")
+    decoder.add_argument("--no-shift-merge", dest="merge_shift", default=True, action="store_false",
+                         help="If the output file already exists, do not try to shift the new entities "
+                              "to fit the location of the old ones")
+    decoder.add_argument("--shift-x", dest="shift_x", type=int, help="Override shift_x value")
+    decoder.add_argument("--shift-y", dest="shift_y", type=int, help="Override shift_y value")
     decoder.add_argument("destination", type=Path,
                          help="The destination file or directory to write to. "
                               "Use '-' to write to STDOUT as a single formatted JSON.")
@@ -131,17 +160,17 @@ def main():
 
 
 def dump_cmd(args: argparse.Namespace):
-    decode(args.source, args.destination, args.verbose, args.compact, "none", "keep",
-           normalize_pos=False, merge_index=False)
+    decode(args.source, args.destination, args.verbose, args.compact)
 
 
 def decode_cmd(args: argparse.Namespace):
     decode(args.source, args.destination, args.verbose, args.compact, args.sort, args.ids,
-           args.normalize_pos, args.merge_index)
+           args.normalize_shift, args.merge_index, args.merge_shift, args.shift_x, args.shift_y)
 
 
-def decode(source: Path, destination: Path, verbose: bool, compact: bool, sort_mode: SortMode,
-           ids_mode: IdsMode, normalize_pos: bool, merge_index: bool) -> None:
+def decode(source: Path, destination: Path, verbose: bool, compact: bool,
+           sort_mode: SortMode = "none", ids_mode: IdsMode = "keep", normalize_shift=False, merge_index=False,
+           merge_shift=False, override_shift_x: int = None, override_shift_y: int = None) -> None:
     if source is None:
         assert_clipboard()
         eprint("Reading blueprint string from clipboard")
@@ -154,7 +183,8 @@ def decode(source: Path, destination: Path, verbose: bool, compact: bool, sort_m
             raise ValueError(f"Source file does not exist, or it is not a file: {source}")
         eprint(f"Reading blueprint string from {source}")
         json_text = source.read_text()
-    processor = Processor(verbose, sort_mode, ids_mode, normalize_pos, compact, merge_index)
+    processor = Processor(verbose, sort_mode, ids_mode, normalize_shift, compact, merge_index, merge_shift,
+                          (override_shift_x, override_shift_y))
     data = processor.decode(json_text)
     if str(destination) == "-":
         print(to_pretty_json(data, compact))
@@ -174,8 +204,7 @@ def encode_cmd(args: argparse.Namespace):
         data = read_files(args.source, args.verbose)
     else:
         raise ValueError(f"Invalid source file or directory: {args.source}")
-    processor = Processor(args.verbose, "none", "keep", normalize_pos=False,
-                          compact=False, merge_index=False)
+    processor = Processor(args.verbose)
     encoded = processor.encode(data)
     if args.destination is None:
         assert_clipboard()
@@ -240,44 +269,71 @@ class Entity:
 
 
 class Processor:
-    def __init__(self, verbose: bool, sort_mode: SortMode, ids_mode: IdsMode, normalize_pos: bool,
-                 compact: bool, merge_index: bool):
+    def __init__(self, verbose: bool, sort_mode: SortMode = "none", ids_mode: IdsMode = "keep", normalize_shift=False,
+                 compact=False, merge_index=False, merge_shift=False, override_shift=None):
         self.verbose = verbose
-        self.normalize_pos = normalize_pos
+        self.normalize_shift = normalize_shift
+        self.disable_shift = False
         self.sort_keys = sort_mode == "all" or sort_mode == "keys"
         self.sort_entities = sort_mode == "all" or sort_mode == "entities"
         self.remove_entity_number = ids_mode == "refs"
         self.use_rel_ids = ids_mode != "keep"
-        self.generate_ids = False
         self.compact = compact
         self.merge_index = merge_index
+        self.merge_shift = merge_shift
+        self.override_shift = (None, None) if override_shift is None else override_shift
 
     def decode(self, json_text: str) -> dict:
         if not json_text.startswith("0"):
             raise ValueError("Invalid blueprint string. It must start with a 0.")
         data = json.loads(zlib.decompress(base64.b64decode(json_text[1:])).decode("utf8"))
-        self.process(data, generate_ids=False)
+        self.process_ids(data, to_abs_ids=False)
+        if self.sort_keys:
+            sort_dicts_rec(data)
         return data
 
     def encode(self, data: dict) -> str:
         # if this was part of a blueprint book, get rid of the index in the output
         # the index will be re-added by migrate_old_data() when decoding into the same file
         data.pop("index", None)
-        self.process(data, generate_ids=True)
+        self.disable_shift = True
+        self.process_ids(data, to_abs_ids=True)
         compressed = zlib.compress(bytes(to_json(data), "utf8"), level=9)
         return "0" + base64.b64encode(compressed).decode("utf8")
 
-    def process(self, data: dict, generate_ids):
+    def process_ids(self, data: dict, to_abs_ids: bool):
         if type(data) != dict or len(data) != 1:
             raise ValueError("Invalid blueprint string. It must contain exactly one object.")
         if self.verbose:
             eprint(f"Processing {get_label(data)}")
-        self.generate_ids = generate_ids
-        self._recurse(data, [])
-        if self.sort_keys:
-            sort_dicts_rec(data)
+        self._process_ids_rec(data, [], to_abs_ids)
+
+    def _process_ids_rec(self, data: Any, path: List[str], to_abs_ids: bool) -> None:
+        if type(data) == dict:
+            if "blueprint" in data:
+                bp = Blueprint(self, data, to_abs_ids)
+                bp.resolve_ids(path)
+                if self.disable_shift:
+                    bp.set_shift(None)
+                elif self.normalize_shift:
+                    bp.shift_by_usage()
+            else:
+                path.append("")
+                for key, val in data.items():
+                    if type(val) in COMPLEX_TYPES:
+                        path[-1] = key
+                        self._process_ids_rec(val, path, to_abs_ids)
+                path.pop()
+        elif type(data) == list:
+            path.append("")
+            for idx, val in enumerate(data):
+                if type(val) in COMPLEX_TYPES:
+                    path[-1] = str(idx)
+                    self._process_ids_rec(val, path, to_abs_ids)
+            path.pop()
 
     def write_files(self, data: dict, dest: Path) -> None:
+        # We are "loading" now
         label = get_label(data)
         if "blueprint_book" not in data:
             dest = dest.with_suffix(".json")
@@ -325,103 +381,73 @@ class Processor:
     def migrate_old_data(self, new_data: dict, dest: Path) -> None:
         msg = f"Overwriting {dest} with new data"
         old_data = None
-        if self.merge_index:
+        if self.merge_index or self.merge_shift:
             old_data = json.loads(dest.read_text())
         if self.merge_index and "index" not in new_data:
             index = old_data.get("index", None)
             if index is not None:
                 new_data["index"] = index
                 msg += f", index restored to {index}"
+        if self.merge_shift:
+            old_data_type = get_non_index_key(old_data)
+            new_data_type = get_non_index_key(new_data)
+            if old_data_type != new_data_type:
+                msg += f", changing type {old_data_type} → {new_data_type}"
+                eprint(msg)
+                return
+            if old_data_type == "blueprint":
+                old_bp = Blueprint(self, old_data, False)
+                new_bp = Blueprint(self, new_data, False)
+                msg += ", " + new_bp.merge_shift_from_old(old_bp)
         if self.verbose:
             eprint(msg)
 
-    def _recurse(self, data: Any, path: List[str]) -> None:
-        if type(data) == dict:
-            if "blueprint" in data:
-                Blueprint(self, data).process(path)
-            else:
-                path.append("")
-                for key, val in data.items():
-                    if type(val) in COMPLEX_TYPES:
-                        path[-1] = key
-                        self._recurse(val, path)
-                path.pop()
-        elif type(data) == list:
-            path.append("")
-            for idx, val in enumerate(data):
-                if type(val) in COMPLEX_TYPES:
-                    path[-1] = str(idx)
-                    self._recurse(val, path)
-            path.pop()
-
 
 class Blueprint:
-    def __init__(self, processor: Processor, data: dict):
-        self.normalize_pos = processor.normalize_pos
-        self.sort_keys = processor.sort_keys
+    def __init__(self, processor: Processor, data: dict, to_abs_ids: bool):
         self.sort_entities = processor.sort_entities
         self.remove_entity_number = processor.remove_entity_number
         self.use_rel_ids = processor.use_rel_ids
-        self.generate_ids = processor.generate_ids
-        self.data = data
+        self.override_shift = processor.override_shift
+        self.to_abs_ids = to_abs_ids
         self.blueprint = data["blueprint"]
-        self.entities = self.blueprint.get("entities")
+        self.entities = self.blueprint.get("entities", [])
         self.entity_ids: Dict[EID, Entity] = {}
         self.position_to_entity_id: Dict[Position, EID] = {}
-        # If these values are non-zero, positions will be de-shifted to original
-        self.shift_x = -self.blueprint.get("shift_x", 0)
-        self.shift_y = -self.blueprint.get("shift_y", 0)
-        if self.normalize_pos:
-            # If normalizing, the original data must not have had these shifts
-            assert self.shift_x == 0
-            assert self.shift_y == 0
 
-    def process(self, path):
-        if self.entities is None:
-            return
-        if self.normalize_pos:
-            self.shift_x = self.calc_coordinate_shift(self.entities, "x")
-            self.shift_y = self.calc_coordinate_shift(self.entities, "y")
-            if (self.shift_x, self.shift_y) != (0, 0):
-                self.blueprint["shift_x"] = self.shift_x
-                self.blueprint["shift_y"] = self.shift_y
-        else:
-            self.blueprint.pop("shift_x", None)
-            self.blueprint.pop("shift_y", None)
-        if self.sort_entities:
-            # Sort blueprint entities by their combined x,y position
-            self.entities.sort(key=lambda v: position_to_morton_number(v.get("position")))
+    def resolve_ids(self, path: List[str]) -> None:
         missing_ids = []
         path.append("")
         for idx, entity_data in enumerate(self.entities):
             path[-1] = str(idx)
             # Save and possibly remove entity_id values
-            eid = self._process_entity(entity_data, path)
+            eid = self._update_entity_id(entity_data, path)
             if eid is None:
                 missing_ids.append(idx)
-        if self.generate_ids:
+        if self.to_abs_ids:
             new_id = EID(1)
             for idx in missing_ids:
                 path[-1] = str(idx)
                 while new_id in self.entity_ids:
                     new_id += 1
-                self._process_entity(self.entities[idx], path, new_id)
+                self._update_entity_id(self.entities[idx], path, new_id)
         for idx, entity_data in enumerate(self.entities):
             path[-1] = str(idx)
             # Switch between entity_id and entity_rel (relative position)
-            self._update_relative_ids(entity_data["entity_number"], entity_data)
+            self._update_rel_ids(entity_data["entity_number"], entity_data)
             if self.remove_entity_number:
                 del entity_data["entity_number"]
         path.pop()
 
-    def _process_entity(self, entity_data: dict, path: List[str], new_id: Optional[EID] = None) -> Optional[EID]:
+    def _update_entity_id(self, entity_data: dict, path: List[str],
+                          new_id: Optional[EID] = None) -> Optional[EID]:
         # Validate entity_number - must be unique in the blueprint entities list
         def path_str():
             return ".".join(path)
 
         eid = entity_data.get("entity_number")
         if eid is None:
-            if not self.generate_ids:
+            if not self.to_abs_ids:
                 raise ValueError(f"Missing entity_number in {path_str()}")
             if new_id is None:
                 return None
@@ -433,7 +459,6 @@ class Blueprint:
             eid = new_id
         else:
             assert new_id is None
-
         if eid < 1:
             raise ValueError(f"Invalid entity_number {eid} in {path_str()}")
         if eid in self.entity_ids:
@@ -445,10 +470,6 @@ class Blueprint:
         x, y = position.get("x"), position.get("y")
         if type(x) not in NUMBER_TYPES or type(y) not in NUMBER_TYPES:
             raise ValueError(f"Unrecognized position object {to_json({position})} in {path_str()}")
-        x -= self.shift_x
-        y -= self.shift_y
-        position["x"] = x
-        position["y"] = y
         pos = Position((coord_to_int(x), coord_to_int(y)))
         name = entity_data.get("name")
         if pos in self.position_to_entity_id:
@@ -463,23 +484,23 @@ class Blueprint:
             self.position_to_entity_id[pos] = eid
         return eid
 
-    def _update_relative_ids(self, entity_number: EID, data: Any, parent_key: str = None) -> None:
+    def _update_rel_ids(self, entity_number: EID, data: Any, parent_key: str = None) -> None:
         if type(data) == dict:
             for key, val in data.items():
                 if type(val) in COMPLEX_TYPES:
-                    self._update_relative_ids(entity_number, val, key)
+                    self._update_rel_ids(entity_number, val, key)
             entity_id = data.get("entity_id")
             rel_id = data.get("entity_rel")
             if entity_id is not None:
                 if rel_id is not None:
                     raise ValueError(f"Cannot have both entity_id and entity_rel in {entity_number}")
                 # Validate referenced entity_id, even if we don"t use it
-                rel_id = self.make_rel_id(entity_number, entity_id)
+                rel_id = self._make_rel_id(entity_number, entity_id)
                 if self.use_rel_ids:
                     del data["entity_id"]
                     data["entity_rel"] = rel_id
             elif rel_id is not None:
-                entity_id = self.parse_rel_id(entity_number, rel_id)
+                entity_id = self._parse_rel_id(entity_number, rel_id)
                 if not self.use_rel_ids:
                     del data["entity_rel"]
                     data["entity_id"] = entity_id
@@ -489,24 +510,23 @@ class Blueprint:
                 list_is_str = all(type(v) == str for v in data)
                 if not list_is_str and not list_is_int:
                     raise ValueError(f"Invalid neighbour list {entity_number}: all values must be either ints or strs")
-                if not self.generate_ids:
-                    if not list_is_int:
-                        raise ValueError(f"Invalid neighbour list {entity_number} - all values must be ints")
+                if not self.to_abs_ids and not list_is_int:
+                    raise ValueError(f"Invalid neighbour list {entity_number} - all values must be ints")
                 if self.use_rel_ids != list_is_str:
                     # Convert entity IDs to relative IDs or vice versa
                     old_list = data.copy()
                     data.clear()
                     for val in old_list:
                         if self.use_rel_ids:
-                            data.append(self.make_rel_id(entity_number, val))
+                            data.append(self._make_rel_id(entity_number, val))
                         else:
-                            data.append(self.parse_rel_id(entity_number, val))
+                            data.append(self._parse_rel_id(entity_number, val))
             else:
                 for val in data:
                     if type(val) in COMPLEX_TYPES:
-                        self._update_relative_ids(entity_number, val)
+                        self._update_rel_ids(entity_number, val)
 
-    def make_rel_id(self, entity_number: EID, entity_id: EID) -> str:
+    def _make_rel_id(self, entity_number: EID, entity_id: EID) -> str:
         assert type(entity_id) == int
         entity = self.entity_ids[entity_number]
         info = self.entity_ids.get(entity_id)
@@ -520,7 +540,7 @@ class Blueprint:
         y_diff = int_to_coord(info.pos[1] - entity.pos[1])
         return f"{x_diff},{y_diff}"
 
-    def parse_rel_id(self, entity_number: EID, rel_id: str) -> EID:
+    def _parse_rel_id(self, entity_number: EID, rel_id: str) -> EID:
         assert type(rel_id) == str
         entity = self.entity_ids[entity_number]
         rel_parts = rel_id.split(",", 2)
@@ -533,31 +553,133 @@ class Blueprint:
             raise ValueError(f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {entity.path}")
         return entity_id
 
+    def shift_by_usage(self):
+        hist_x = self.calc_histogram("x", by_name=False)
+        shift_x = self.calc_coordinate_shift(hist_x)
+        hist_y = self.calc_histogram("y", by_name=False)
+        shift_y = self.calc_coordinate_shift(hist_y)
+        self.set_shift((shift_x, shift_y))
+
+    def merge_shift_from_old(self, old_bp: "Blueprint") -> str:
+        if not old_bp.entities:
+            return "shift is unchanged because old blueprint has no entities"
+        if not self.entities:
+            return "shift is unchanged because new blueprint has no entities"
+        old_hist_x = old_bp.calc_histogram("x", by_name=True)
+        new_hist_x = self.calc_histogram("x", by_name=True)
+        shift_x = self.calc_histogram_diff(old_hist_x, new_hist_x)
+        old_hist_y = old_bp.calc_histogram("y", by_name=True)
+        new_hist_y = self.calc_histogram("y", by_name=True)
+        shift_y = self.calc_histogram_diff(old_hist_y, new_hist_y)
+        if shift_x == 0 and shift_y == 0:
+            return "entities were not shifted"
+        else:
+            self.set_shift((shift_x, shift_y))
+            return f"entities shifted by x={shift_x}, y={shift_y}"
+
+    def set_shift(self, adjust_by: Optional[Tuple[int, int]]) -> None:
+        shift_x = self.blueprint.get("shift_x", 0)
+        shift_y = self.blueprint.get("shift_y", 0)
+        if adjust_by is None:
+            target_x, target_y = 0, 0
+        else:
+            if self.override_shift[0] is not None:
+                target_x = self.override_shift[0]
+            else:
+                target_x = shift_x + adjust_by[0]
+            if self.override_shift[1] is not None:
+                target_y = self.override_shift[1]
+            else:
+                target_y = shift_y + adjust_by[1]
+        adjust_x = shift_x - target_x
+        adjust_y = shift_y - target_y
+        if adjust_x != 0 or adjust_y != 0:
+            for entity in self.entities:
+                position = entity["position"]
+                position["x"] += adjust_x
+                position["y"] += adjust_y
+        if adjust_by is None:
+            self.blueprint.pop("shift_x", None)
+            self.blueprint.pop("shift_y", None)
+        elif target_x != 0 or target_y != 0:
+            self.blueprint["shift_x"] = target_x
+            self.blueprint["shift_y"] = target_y
+        if self.sort_entities:
+            self.entities.sort(key=entity_sort_key)
+
     @staticmethod
-    def calc_coordinate_shift(entities: List[dict], coord: str):
+    def calc_coordinate_shift(histogram: Histogram) -> int:
         """Find the most "stable" value for the x or y position coordinate.
         First creates a histogram of all values, looks at the first 20%,
         and finds the biggest "jump", i.e. from 2,1,4,34,... -- the 34 would be it."""
-        histogram = defaultdict(int)
-        for entity in entities:
-            position = entity.get("position")
-            if position is None:
-                continue  # any data validation is done later, no need to dup
-            val = position.get(coord)
-            if val is None:
-                continue
-            histogram[int(val)] += 1
         if not histogram:
             return 0
-        histogram = list(histogram.items())
         min_entities = min((v[1] for v in histogram))
         max_entities = max((v[1] for v in histogram))
         threshold = min_entities + (max_entities - min_entities) / 4
-        histogram.sort(key=lambda v: v[0])  # sort by position coordinate
         # Find first row/column which increases the number of entities by more than threshold
         return next((histogram[i] for i in range(len(histogram))
                      if (histogram[i][1] - (histogram[i - 1][1] if i > 0 else 0)) > threshold),
                     histogram[0])[0]
+
+    def calc_histogram_diff(self, old_hist: Histogram, new_hist: Histogram) -> int:
+        old_min = old_hist[0][0][0]
+        old_max = old_hist[-1][0][0]
+        new_min = new_hist[0][0][0]
+        new_max = new_hist[-1][0][0]
+        old_range = old_max - old_min + 1
+        new_range = new_max - new_min + 1
+        overlap_size = min(old_range, new_range) // 2
+        if new_range > old_range:
+            shift_range = range(old_max - new_max - overlap_size, old_min - new_min + overlap_size)
+        else:
+            shift_range = range(old_min - new_min - overlap_size, old_max - new_max + overlap_size)
+        diffs = []
+        for shift in shift_range:
+            diffs.append((shift, self.calc_diff_score(old_hist, new_hist, shift)))
+        res = min(diffs, key=lambda x: x[1])[0]
+        return res
+
+    @staticmethod
+    def calc_diff_score(old_hist: Histogram, new_hist: Histogram, shift: int) -> int:
+        score = 0
+        old_idx, new_idx = 0, 0
+        while True:
+            if old_idx < len(old_hist) and new_idx < len(new_hist):
+                old_val = old_hist[old_idx]
+                new_val = (new_hist[new_idx][0][0] + shift, new_hist[new_idx][0][1]), new_hist[new_idx][1]
+                if old_val[0] == new_val[0]:
+                    diff = abs(old_val[1] - new_val[1])
+                    if diff == 0:
+                        # Boost score when the number of entities of the same type and index is identical
+                        score -= 0
+                    else:
+                        # Mismatching of larger entities get heavier score penalty
+                        multiplier = ENTITY_SCORES.get(old_val[0][1], 1)
+                        score += diff * multiplier
+                    old_idx += 1
+                    new_idx += 1
+                elif old_val[0] < new_val[0]:
+                    score += old_val[1]
+                    old_idx += 1
+                else:
+                    score += new_val[1]
+                    new_idx += 1
+                continue
+            if old_idx < len(old_hist):
+                score += sum((v[1] for v in old_hist[old_idx:]))
+            else:
+                score += sum((v[1] for v in new_hist[new_idx:]))
+            return score
+
+    def calc_histogram(self, by_x_or_y: str, by_name: bool) -> Histogram:
+        if by_name:
+            values = ((int(v["position"][by_x_or_y]), v["name"]) for v in self.entities)
+        else:
+            values = (int(v["position"][by_x_or_y]) for v in self.entities)
+        res = [(k, sum(1 for _ in v)) for k, v in groupby(sorted(values))]
+        res.sort(key=lambda v: v[0])
+        return Histogram(res)
 
 
 def sort_dicts_rec(data: Any) -> None:
@@ -590,16 +712,16 @@ def sort_dict(data) -> None:
         data[k] = old_data[k]
 
 
-def position_to_morton_number(position: dict) -> int:
+def entity_sort_key(entity: dict):
+    """Sort blueprint entities by their combined x,y position"""
+    position = entity["position"]
+    return to_morton_number(position["x"], position["y"]), entity["name"]
+
+
+def to_morton_number(x, y) -> int:
     # Create a single interleaved number (Morton number) to use as a sorting key.
     # This approach tries to keep features that are nearby in the X,Y plane near each other in a list.
     # Adapted from http://graphics.stanford.edu/~seander/bithacks.html#InterleaveBMN
-    if not position:
-        return 0
-    x, y = position.get("x"), position.get("y")
-    if x is None or y is None:
-        return 0
-
     def prepare_number(val):
         # Normalize to an unsigned 16 bit value
         val = min(max(coord_to_int(val) + (2 ** 15), 0), 2 ** 16 - 1)

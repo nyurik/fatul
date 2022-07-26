@@ -23,22 +23,22 @@
         ]
       },
       {
-        "entity_number": 3,
-        "name": "medium-electric-pole",
+        "entity_number": 2,
+        "name": "small-electric-pole",
         "position": {
-          "x": 0.5,
-          "y": 5.5
+          "x": 5.5,
+          "y": 1.5
         },
         "neighbours": [
           1
         ]
       },
       {
-        "entity_number": 2,
-        "name": "small-electric-pole",
+        "entity_number": 3,
+        "name": "medium-electric-pole",
         "position": {
-          "x": 5.5,
-          "y": 1.5
+          "x": 0.5,
+          "y": 5.5
         },
         "neighbours": [
           1
