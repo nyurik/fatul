@@ -5,16 +5,6 @@
     "shift_y": -16,
     "version": 281479275675648,
     "entities": [
-      {"name": "substation", "position": {"x": 0, "y": 0}},
-      {
-        "name": "small-lamp",
-        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "2.5,-1"}]}},
-        "control_behavior": {
-          "use_colors": true,
-          "circuit_condition": {"comparator": "=", "constant": 21, "first_signal": {"name": "signal-X", "type": "virtual"}}
-        },
-        "position": {"x": 0.5, "y": 3.5}
-      },
       {
         "name": "arithmetic-combinator",
         "direction": 6,
@@ -29,7 +19,13 @@
         },
         "position": {"x": 3, "y": 2.5}
       },
-      {"name": "solar-panel", "position": {"x": 7.5, "y": 1.5}},
+      {
+        "name": "constant-combinator",
+        "direction": 4,
+        "connections": {"1": {"red": [{"circuit_id": 1, "entity_rel": "-2.5,1"}]}},
+        "control_behavior": {"filters": [{"count": 42, "index": 1, "signal": {"name": "signal-X", "type": "virtual"}}]},
+        "position": {"x": 5.5, "y": 4.5}
+      },
       {
         "name": "decider-combinator",
         "direction": 6,
@@ -49,12 +45,16 @@
         "position": {"x": 3, "y": 5.5}
       },
       {
-        "name": "constant-combinator",
-        "direction": 4,
-        "connections": {"1": {"red": [{"circuit_id": 1, "entity_rel": "-2.5,1"}]}},
-        "control_behavior": {"filters": [{"count": 42, "index": 1, "signal": {"name": "signal-X", "type": "virtual"}}]},
-        "position": {"x": 5.5, "y": 4.5}
-      }
+        "name": "small-lamp",
+        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "2.5,-1"}]}},
+        "control_behavior": {
+          "use_colors": true,
+          "circuit_condition": {"comparator": "=", "constant": 21, "first_signal": {"name": "signal-X", "type": "virtual"}}
+        },
+        "position": {"x": 0.5, "y": 3.5}
+      },
+      {"name": "solar-panel", "position": {"x": 7.5, "y": 1.5}},
+      {"name": "substation", "position": {"x": 0, "y": 0}}
     ],
     "icons": [{"index": 1, "signal": {"name": "arithmetic-combinator", "type": "item"}}]
   }

@@ -6,43 +6,6 @@
     "version": 281479275675648,
     "entities": [
       {
-        "name": "substation",
-        "entity_number": 1,
-        "position": {
-          "x": 0,
-          "y": 0
-        }
-      },
-      {
-        "name": "small-lamp",
-        "entity_number": 3,
-        "connections": {
-          "1": {
-            "red": [
-              {
-                "circuit_id": 2,
-                "entity_id": 4
-              }
-            ]
-          }
-        },
-        "control_behavior": {
-          "use_colors": true,
-          "circuit_condition": {
-            "comparator": "=",
-            "constant": 21,
-            "first_signal": {
-              "name": "signal-X",
-              "type": "virtual"
-            }
-          }
-        },
-        "position": {
-          "x": 0.5,
-          "y": 3.5
-        }
-      },
-      {
         "name": "arithmetic-combinator",
         "direction": 6,
         "entity_number": 4,
@@ -83,11 +46,34 @@
         }
       },
       {
-        "name": "solar-panel",
-        "entity_number": 2,
+        "name": "constant-combinator",
+        "direction": 4,
+        "entity_number": 6,
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "circuit_id": 1,
+                "entity_id": 5
+              }
+            ]
+          }
+        },
+        "control_behavior": {
+          "filters": [
+            {
+              "count": 42,
+              "index": 1,
+              "signal": {
+                "name": "signal-X",
+                "type": "virtual"
+              }
+            }
+          ]
+        },
         "position": {
-          "x": 7.5,
-          "y": 1.5
+          "x": 5.5,
+          "y": 4.5
         }
       },
       {
@@ -132,34 +118,48 @@
         }
       },
       {
-        "name": "constant-combinator",
-        "direction": 4,
-        "entity_number": 6,
+        "name": "small-lamp",
+        "entity_number": 3,
         "connections": {
           "1": {
             "red": [
               {
-                "circuit_id": 1,
-                "entity_id": 5
+                "circuit_id": 2,
+                "entity_id": 4
               }
             ]
           }
         },
         "control_behavior": {
-          "filters": [
-            {
-              "count": 42,
-              "index": 1,
-              "signal": {
-                "name": "signal-X",
-                "type": "virtual"
-              }
+          "use_colors": true,
+          "circuit_condition": {
+            "comparator": "=",
+            "constant": 21,
+            "first_signal": {
+              "name": "signal-X",
+              "type": "virtual"
             }
-          ]
+          }
         },
         "position": {
-          "x": 5.5,
-          "y": 4.5
+          "x": 0.5,
+          "y": 3.5
+        }
+      },
+      {
+        "name": "solar-panel",
+        "entity_number": 2,
+        "position": {
+          "x": 7.5,
+          "y": 1.5
+        }
+      },
+      {
+        "name": "substation",
+        "entity_number": 1,
+        "position": {
+          "x": 0,
+          "y": 0
         }
       }
     ],

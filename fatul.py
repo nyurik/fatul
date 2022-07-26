@@ -715,7 +715,7 @@ def sort_dict(data) -> None:
 def entity_sort_key(entity: dict):
     """Sort blueprint entities by their combined x,y position"""
     position = entity["position"]
-    return to_morton_number(position["x"], position["y"]), entity["name"]
+    return entity["name"], to_morton_number(position["x"], position["y"])
 
 
 def to_morton_number(x, y) -> int:

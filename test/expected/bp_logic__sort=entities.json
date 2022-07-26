@@ -11,43 +11,6 @@
     ],
     "entities": [
       {
-        "entity_number": 1,
-        "name": "substation",
-        "position": {
-          "x": 0,
-          "y": 0
-        }
-      },
-      {
-        "entity_number": 3,
-        "name": "small-lamp",
-        "position": {
-          "x": 0.5,
-          "y": 3.5
-        },
-        "control_behavior": {
-          "circuit_condition": {
-            "first_signal": {
-              "type": "virtual",
-              "name": "signal-X"
-            },
-            "constant": 21,
-            "comparator": "="
-          },
-          "use_colors": true
-        },
-        "connections": {
-          "1": {
-            "red": [
-              {
-                "entity_id": 4,
-                "circuit_id": 2
-              }
-            ]
-          }
-        }
-      },
-      {
         "entity_number": 4,
         "name": "arithmetic-combinator",
         "position": {
@@ -88,11 +51,34 @@
         }
       },
       {
-        "entity_number": 2,
-        "name": "solar-panel",
+        "entity_number": 6,
+        "name": "constant-combinator",
         "position": {
-          "x": 7.5,
-          "y": 1.5
+          "x": 5.5,
+          "y": 4.5
+        },
+        "direction": 4,
+        "control_behavior": {
+          "filters": [
+            {
+              "signal": {
+                "type": "virtual",
+                "name": "signal-X"
+              },
+              "count": 42,
+              "index": 1
+            }
+          ]
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_id": 5,
+                "circuit_id": 1
+              }
+            ]
+          }
         }
       },
       {
@@ -137,34 +123,48 @@
         }
       },
       {
-        "entity_number": 6,
-        "name": "constant-combinator",
+        "entity_number": 3,
+        "name": "small-lamp",
         "position": {
-          "x": 5.5,
-          "y": 4.5
+          "x": 0.5,
+          "y": 3.5
         },
-        "direction": 4,
         "control_behavior": {
-          "filters": [
-            {
-              "signal": {
-                "type": "virtual",
-                "name": "signal-X"
-              },
-              "count": 42,
-              "index": 1
-            }
-          ]
+          "circuit_condition": {
+            "first_signal": {
+              "type": "virtual",
+              "name": "signal-X"
+            },
+            "constant": 21,
+            "comparator": "="
+          },
+          "use_colors": true
         },
         "connections": {
           "1": {
             "red": [
               {
-                "entity_id": 5,
-                "circuit_id": 1
+                "entity_id": 4,
+                "circuit_id": 2
               }
             ]
           }
+        }
+      },
+      {
+        "entity_number": 2,
+        "name": "solar-panel",
+        "position": {
+          "x": 7.5,
+          "y": 1.5
+        }
+      },
+      {
+        "entity_number": 1,
+        "name": "substation",
+        "position": {
+          "x": 0,
+          "y": 0
         }
       }
     ],
