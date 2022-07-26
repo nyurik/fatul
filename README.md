@@ -28,7 +28,9 @@ Factorio JSON is not good to store in GIT because the entity IDs and their order
 * The same value is used for the `neighbours` field (an array of entity IDs)
 * If anything else uses a list of entity IDs (rather than `entity_id` field), please create an issue.
 
-Sorting is another reason for large diffs. Factorio could order entities in any order on every export, so to minimize that, FaTul re-sorts entities by their x,y position using [Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve). This way entities that are close together on a blueprint are more likely to stay together in a list.
+When saving a new blueprint, entities positions are normalized by shifting them to near-zero values, and storing a global x,y shift. When the blueprint is updated, FaTul attempts to match the old blueprint to the new one, and shift the entities of the new version to match the old one. This way the x,y position of most entities will remain intact between revisions, and only the blueprint main shift values might change.
+
+Sorting is another reason for large diffs. Factorio could order entities in any order on every export, so to minimize that, FaTul re-sorts entities by their names following by the x,y position using [Z-order curve](https://en.wikipedia.org/wiki/Z-order_curve). This way entities that are close together on a blueprint are more likely to stay together in a list.
 
 ## Installation
 
