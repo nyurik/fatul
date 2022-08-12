@@ -1,0 +1,311 @@
+{
+  "blueprint": {
+    "description": "some long description",
+    "snap-to-grid": {
+      "x": 110,
+      "y": 110
+    },
+    "absolute-snapping": true,
+    "icons": [
+      {
+        "signal": {
+          "type": "virtual",
+          "name": "signal-M"
+        },
+        "index": 1
+      },
+      {
+        "signal": {
+          "type": "virtual",
+          "name": "signal-A"
+        },
+        "index": 2
+      },
+      {
+        "signal": {
+          "type": "virtual",
+          "name": "signal-L"
+        },
+        "index": 3
+      },
+      {
+        "signal": {
+          "type": "virtual",
+          "name": "signal-L"
+        },
+        "index": 4
+      }
+    ],
+    "entities": [
+      {
+        "entity_number": 8964,
+        "name": "fast-filter-miniloader-inserter",
+        "position": {
+          "x": 4.5,
+          "y": 2.5
+        },
+        "control_behavior": {
+          "circuit_mode_of_operation": 1
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "circuit_id": 2,
+                "entity_rel": "-0.5,-2"
+              },
+              {
+                "entity_rel": "0,0,57ea"
+              }
+            ]
+          }
+        },
+        "override_stack_size": 1,
+        "drop_position": {
+          "x": 0.25,
+          "y": -0.203125
+        },
+        "pickup_position": {
+          "x": 0,
+          "y": 0.796875
+        }
+      },
+      {
+        "entity_number": 8965,
+        "name": "fast-filter-miniloader-inserter",
+        "position": {
+          "x": 4.5,
+          "y": 2.5
+        },
+        "control_behavior": {
+          "circuit_mode_of_operation": 1
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_rel": "0,0,9326"
+              },
+              {
+                "circuit_id": 2,
+                "entity_rel": "-0.5,-2"
+              }
+            ]
+          }
+        },
+        "override_stack_size": 1,
+        "drop_position": {
+          "x": -0.25,
+          "y": -0.203125
+        },
+        "pickup_position": {
+          "x": 0,
+          "y": 0.796875
+        }
+      },
+      {
+        "entity_number": 8887,
+        "name": "arithmetic-combinator",
+        "position": {
+          "x": 4,
+          "y": 0.5
+        },
+        "direction": 6,
+        "control_behavior": {
+          "arithmetic_conditions": {
+            "first_signal": {
+              "type": "virtual",
+              "name": "signal-each"
+            },
+            "second_constant": 1,
+            "operation": "*",
+            "output_signal": {
+              "type": "virtual",
+              "name": "signal-each"
+            }
+          }
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_rel": "-0.5,2"
+              }
+            ]
+          },
+          "2": {
+            "red": [
+              {
+                "circuit_id": 2,
+                "entity_rel": "-4,0"
+              },
+              {
+                "entity_rel": "0.5,2,9326"
+              },
+              {
+                "entity_rel": "0.5,2,57ea"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "entity_number": 8883,
+        "name": "arithmetic-combinator",
+        "position": {
+          "x": 0,
+          "y": 0.5
+        },
+        "direction": 2,
+        "control_behavior": {
+          "arithmetic_conditions": {
+            "first_signal": {
+              "type": "virtual",
+              "name": "signal-each"
+            },
+            "second_constant": -1,
+            "operation": "*",
+            "output_signal": {
+              "type": "virtual",
+              "name": "signal-each"
+            }
+          }
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_rel": "0.5,2"
+              }
+            ]
+          },
+          "2": {
+            "red": [
+              {
+                "circuit_id": 2,
+                "entity_rel": "4,0"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "entity_number": 8968,
+        "name": "medium-electric-pole",
+        "position": {
+          "x": 3.5,
+          "y": 2.5
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "circuit_id": 1,
+                "entity_rel": "0.5,-2"
+              },
+              {
+                "entity_rel": "0,7"
+              }
+            ],
+            "green": [
+              {
+                "entity_rel": "0,7"
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          "-3,0",
+          "0,7"
+        ]
+      },
+      {
+        "entity_number": 8962,
+        "name": "medium-electric-pole",
+        "position": {
+          "x": 0.5,
+          "y": 2.5
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "circuit_id": 1,
+                "entity_rel": "-0.5,-2"
+              },
+              {
+                "entity_rel": "0,7"
+              }
+            ],
+            "green": [
+              {
+                "entity_rel": "0,7"
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          "3,0",
+          "0,7"
+        ]
+      },
+      {
+        "entity_number": 9091,
+        "name": "medium-electric-pole",
+        "position": {
+          "x": 0.5,
+          "y": 9.5
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_rel": "0,-7"
+              }
+            ],
+            "green": [
+              {
+                "entity_rel": "0,-7"
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          "0,-7",
+          "3,0"
+        ]
+      },
+      {
+        "entity_number": 9094,
+        "name": "medium-electric-pole",
+        "position": {
+          "x": 3.5,
+          "y": 9.5
+        },
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_rel": "0,-7"
+              }
+            ],
+            "green": [
+              {
+                "entity_rel": "0,-7"
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          "0,-7",
+          "-3,0"
+        ]
+      }
+    ],
+    "item": "blueprint",
+    "label": "SpaceX Mall",
+    "version": 281479275806721,
+    "shift_x": 263,
+    "shift_y": 202
+  }
+}

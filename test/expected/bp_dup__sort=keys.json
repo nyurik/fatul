@@ -1,0 +1,311 @@
+{
+  "blueprint": {
+    "item": "blueprint",
+    "label": "SpaceX Mall",
+    "description": "some long description",
+    "absolute-snapping": true,
+    "shift_x": 263,
+    "shift_y": 202,
+    "version": 281479275806721,
+    "entities": [
+      {
+        "name": "fast-filter-miniloader-inserter",
+        "entity_number": 8964,
+        "override_stack_size": 1,
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "circuit_id": 2,
+                "entity_id": 8887
+              },
+              {
+                "entity_id": 8965
+              }
+            ]
+          }
+        },
+        "control_behavior": {
+          "circuit_mode_of_operation": 1
+        },
+        "drop_position": {
+          "x": 0.25,
+          "y": -0.203125
+        },
+        "pickup_position": {
+          "x": 0,
+          "y": 0.796875
+        },
+        "position": {
+          "x": 4.5,
+          "y": 2.5
+        }
+      },
+      {
+        "name": "fast-filter-miniloader-inserter",
+        "entity_number": 8965,
+        "override_stack_size": 1,
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_id": 8964
+              },
+              {
+                "circuit_id": 2,
+                "entity_id": 8887
+              }
+            ]
+          }
+        },
+        "control_behavior": {
+          "circuit_mode_of_operation": 1
+        },
+        "drop_position": {
+          "x": -0.25,
+          "y": -0.203125
+        },
+        "pickup_position": {
+          "x": 0,
+          "y": 0.796875
+        },
+        "position": {
+          "x": 4.5,
+          "y": 2.5
+        }
+      },
+      {
+        "name": "arithmetic-combinator",
+        "direction": 6,
+        "entity_number": 8887,
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_id": 8968
+              }
+            ]
+          },
+          "2": {
+            "red": [
+              {
+                "circuit_id": 2,
+                "entity_id": 8883
+              },
+              {
+                "entity_id": 8964
+              },
+              {
+                "entity_id": 8965
+              }
+            ]
+          }
+        },
+        "control_behavior": {
+          "arithmetic_conditions": {
+            "operation": "*",
+            "second_constant": 1,
+            "first_signal": {
+              "name": "signal-each",
+              "type": "virtual"
+            },
+            "output_signal": {
+              "name": "signal-each",
+              "type": "virtual"
+            }
+          }
+        },
+        "position": {
+          "x": 4,
+          "y": 0.5
+        }
+      },
+      {
+        "name": "arithmetic-combinator",
+        "direction": 2,
+        "entity_number": 8883,
+        "connections": {
+          "1": {
+            "red": [
+              {
+                "entity_id": 8962
+              }
+            ]
+          },
+          "2": {
+            "red": [
+              {
+                "circuit_id": 2,
+                "entity_id": 8887
+              }
+            ]
+          }
+        },
+        "control_behavior": {
+          "arithmetic_conditions": {
+            "operation": "*",
+            "second_constant": -1,
+            "first_signal": {
+              "name": "signal-each",
+              "type": "virtual"
+            },
+            "output_signal": {
+              "name": "signal-each",
+              "type": "virtual"
+            }
+          }
+        },
+        "position": {
+          "x": 0,
+          "y": 0.5
+        }
+      },
+      {
+        "name": "medium-electric-pole",
+        "entity_number": 8968,
+        "connections": {
+          "1": {
+            "green": [
+              {
+                "entity_id": 9094
+              }
+            ],
+            "red": [
+              {
+                "circuit_id": 1,
+                "entity_id": 8887
+              },
+              {
+                "entity_id": 9094
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          8962,
+          9094
+        ],
+        "position": {
+          "x": 3.5,
+          "y": 2.5
+        }
+      },
+      {
+        "name": "medium-electric-pole",
+        "entity_number": 8962,
+        "connections": {
+          "1": {
+            "green": [
+              {
+                "entity_id": 9091
+              }
+            ],
+            "red": [
+              {
+                "circuit_id": 1,
+                "entity_id": 8883
+              },
+              {
+                "entity_id": 9091
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          8968,
+          9091
+        ],
+        "position": {
+          "x": 0.5,
+          "y": 2.5
+        }
+      },
+      {
+        "name": "medium-electric-pole",
+        "entity_number": 9091,
+        "connections": {
+          "1": {
+            "green": [
+              {
+                "entity_id": 8962
+              }
+            ],
+            "red": [
+              {
+                "entity_id": 8962
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          8962,
+          9094
+        ],
+        "position": {
+          "x": 0.5,
+          "y": 9.5
+        }
+      },
+      {
+        "name": "medium-electric-pole",
+        "entity_number": 9094,
+        "connections": {
+          "1": {
+            "green": [
+              {
+                "entity_id": 8968
+              }
+            ],
+            "red": [
+              {
+                "entity_id": 8968
+              }
+            ]
+          }
+        },
+        "neighbours": [
+          8968,
+          9091
+        ],
+        "position": {
+          "x": 3.5,
+          "y": 9.5
+        }
+      }
+    ],
+    "icons": [
+      {
+        "index": 1,
+        "signal": {
+          "name": "signal-M",
+          "type": "virtual"
+        }
+      },
+      {
+        "index": 2,
+        "signal": {
+          "name": "signal-A",
+          "type": "virtual"
+        }
+      },
+      {
+        "index": 3,
+        "signal": {
+          "name": "signal-L",
+          "type": "virtual"
+        }
+      },
+      {
+        "index": 4,
+        "signal": {
+          "name": "signal-L",
+          "type": "virtual"
+        }
+      }
+    ],
+    "snap-to-grid": {
+      "x": 110,
+      "y": 110
+    }
+  }
+}

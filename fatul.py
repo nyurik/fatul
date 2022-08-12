@@ -18,6 +18,7 @@ import re
 import sys
 import textwrap
 import zlib
+import hashlib
 from dataclasses import dataclass
 from itertools import groupby
 from pathlib import Path
@@ -262,10 +263,10 @@ def assert_clipboard():
 
 
 @dataclass
-class Entity:
-    path: str
+class PosEntity:
     pos: Position
-    names: List[str]
+    entity: dict
+    hash: Optional[str] = None
 
 
 class Processor:
@@ -306,31 +307,31 @@ class Processor:
             raise ValueError("Invalid blueprint string. It must contain exactly one object.")
         if self.verbose:
             eprint(f"Processing {get_label(data)}")
-        self._process_ids_rec(data, [], to_abs_ids)
+        self._process_ids_rec(data, to_abs_ids)
 
-    def _process_ids_rec(self, data: Any, path: List[str], to_abs_ids: bool) -> None:
+    def _process_ids_rec(self, data: Any, to_abs_ids: bool) -> None:
         if type(data) == dict:
             if "blueprint" in data:
                 bp = Blueprint(self, data, to_abs_ids)
-                bp.resolve_ids(path)
+                if to_abs_ids:
+                    bp.create_new_entity_numbers()
+                else:
+                    bp.cache_entity_numbers()
+                bp.update_references()
+                if self.remove_entity_number:
+                    bp.delete_entity_numbers()
                 if self.disable_shift:
                     bp.set_shift(None)
                 elif self.normalize_shift:
                     bp.shift_by_usage()
             else:
-                path.append("")
                 for key, val in data.items():
                     if type(val) in COMPLEX_TYPES:
-                        path[-1] = key
-                        self._process_ids_rec(val, path, to_abs_ids)
-                path.pop()
+                        self._process_ids_rec(val, to_abs_ids)
         elif type(data) == list:
-            path.append("")
             for idx, val in enumerate(data):
                 if type(val) in COMPLEX_TYPES:
-                    path[-1] = str(idx)
-                    self._process_ids_rec(val, path, to_abs_ids)
-            path.pop()
+                    self._process_ids_rec(val, to_abs_ids)
 
     def write_files(self, data: dict, dest: Path) -> None:
         # We are "loading" now
@@ -403,92 +404,47 @@ class Processor:
             eprint(msg)
 
 
-class Blueprint:
-    def __init__(self, processor: Processor, data: dict, to_abs_ids: bool):
-        self.sort_entities = processor.sort_entities
-        self.remove_entity_number = processor.remove_entity_number
-        self.use_rel_ids = processor.use_rel_ids
-        self.override_shift = processor.override_shift
+class IdEncoder:
+    def __init__(self, label, to_abs_ids, use_rel_ids):
+        self.label = label
         self.to_abs_ids = to_abs_ids
-        self.blueprint = data["blueprint"]
-        self.entities = self.blueprint.get("entities", [])
-        self.entity_ids: Dict[EID, Entity] = {}
-        self.position_to_entity_id: Dict[Position, EID] = {}
+        self.use_rel_ids = use_rel_ids
+        self.entity_ids: Dict[EID, PosEntity] = {}
+        self.position_to_entity_ids: Dict[Position, List[EID]] = {}
+        self.new_id = EID(1)
 
-    def resolve_ids(self, path: List[str]) -> None:
-        missing_ids = []
-        path.append("")
-        for idx, entity_data in enumerate(self.entities):
-            path[-1] = str(idx)
-            # Save and possibly remove entity_id values
-            eid = self._update_entity_id(entity_data, path)
-            if eid is None:
-                missing_ids.append(idx)
-        if self.to_abs_ids:
-            new_id = EID(1)
-            for idx in missing_ids:
-                path[-1] = str(idx)
-                while new_id in self.entity_ids:
-                    new_id += 1
-                self._update_entity_id(self.entities[idx], path, new_id)
-        for idx, entity_data in enumerate(self.entities):
-            path[-1] = str(idx)
-            # Switch between entity_id and entity_rel (relative position)
-            self._update_rel_ids(entity_data["entity_number"], entity_data)
-            if self.remove_entity_number:
-                del entity_data["entity_number"]
-        path.pop()
-
-    def _update_entity_id(self, entity_data: dict, path: List[str],
-                          new_id: Optional[EID] = None) -> Optional[EID]:
-        # Validate entity_number - must be unique in the blueprint entities list
-        def path_str():
-            return ".".join(path)
-
-        eid = entity_data.get("entity_number")
-        if eid is None:
-            if not self.to_abs_ids:
-                raise ValueError(f"Missing entity_number in {path_str()}")
-            if new_id is None:
-                return None
-            # Entity number is created as a first key by Factorio, keep it consistent
-            tmp = entity_data.copy()
-            entity_data.clear()
-            entity_data["entity_number"] = new_id
-            entity_data.update(tmp)
-            eid = new_id
-        else:
-            assert new_id is None
+    def save_entity_info(self, entity_data: dict) -> None:
+        eid = entity_data["entity_number"]
         if eid < 1:
-            raise ValueError(f"Invalid entity_number {eid} in {path_str()}")
+            raise ValueError(f"Invalid entity_number {eid} in {self.label}:\n" + to_json(entity_data))
         if eid in self.entity_ids:
-            raise ValueError(f"Duplicate entity_number {eid} in {self.entity_ids[eid].path} and {path_str()}")
-        # Validate position - must have x,y numbers, and be unique in the blueprint entities
+            raise ValueError(f"Duplicate entity_number {eid} in {self.label}:\n" + to_json(entity_data))
         position = entity_data.get("position")
         if position is None:
-            raise ValueError(f"Missing position in {path_str()}")
+            raise ValueError(f"Missing position in {self.label}:\n" + to_json(entity_data))
         x, y = position.get("x"), position.get("y")
         if type(x) not in NUMBER_TYPES or type(y) not in NUMBER_TYPES:
-            raise ValueError(f"Unrecognized position object {to_json({position})} in {path_str()}")
+            raise ValueError(
+                f"Unrecognized position object {to_json(position)} in {self.label}:\n" + to_json(entity_data))
         pos = Position((coord_to_int(x), coord_to_int(y)))
-        name = entity_data.get("name")
-        if pos in self.position_to_entity_id:
-            # More than one entity at this position.
-            # This could be a problem if there are any references to any of them.
-            # The relative ID may need more data to distinguish it.
-            eid = self.position_to_entity_id[pos]
-            entity = self.entity_ids[eid]
-            entity.names.append(name)
+        self.entity_ids[eid] = PosEntity(pos, entity_data)
+        ids = self.position_to_entity_ids.get(pos)
+        if ids is None:
+            self.position_to_entity_ids[pos] = [eid]
         else:
-            self.entity_ids[eid] = Entity(path_str(), pos, [name])
-            self.position_to_entity_id[pos] = eid
-        return eid
+            ids.append(eid)
+            for eid in ids:
+                pos_entity = self.entity_ids[eid]
+                if pos_entity.hash is None:
+                    new_hash = get_obj_hash(pos_entity.entity)
+                    if any((True for v in ids if self.entity_ids[v].hash == hash)):
+                        raise ValueError(f"Duplicate hash {new_hash} in {self.label}:\n" + to_json(entity_data))
+                    pos_entity.hash = new_hash
 
-    def _update_rel_ids(self, entity_number: EID, data: Any, parent_key: str = None) -> None:
+    def update_rel_ids(self, entity_number: EID, data: Any, parent_key: str = None) -> None:
         if type(data) == dict:
             for key, val in data.items():
-                if type(val) in COMPLEX_TYPES:
-                    self._update_rel_ids(entity_number, val, key)
+                self.update_rel_ids(entity_number, val, key)
             entity_id = data.get("entity_id")
             rel_id = data.get("entity_rel")
             if entity_id is not None:
@@ -505,53 +461,109 @@ class Blueprint:
                     del data["entity_rel"]
                     data["entity_id"] = entity_id
         elif type(data) == list:
-            if len(data) > 0 and parent_key == "neighbours":
-                list_is_int = all(type(v) == int for v in data)
-                list_is_str = all(type(v) == str for v in data)
-                if not list_is_str and not list_is_int:
-                    raise ValueError(f"Invalid neighbour list {entity_number}: all values must be either ints or strs")
-                if not self.to_abs_ids and not list_is_int:
-                    raise ValueError(f"Invalid neighbour list {entity_number} - all values must be ints")
-                if self.use_rel_ids != list_is_str:
-                    # Convert entity IDs to relative IDs or vice versa
-                    old_list = data.copy()
-                    data.clear()
-                    for val in old_list:
-                        if self.use_rel_ids:
-                            data.append(self._make_rel_id(entity_number, val))
-                        else:
-                            data.append(self._parse_rel_id(entity_number, val))
-            else:
+            if len(data) == 0 or parent_key != "neighbours":
                 for val in data:
-                    if type(val) in COMPLEX_TYPES:
-                        self._update_rel_ids(entity_number, val)
+                    self.update_rel_ids(entity_number, val)
+                return
+            list_is_int = all(type(v) == int for v in data)
+            list_is_str = all(type(v) == str for v in data)
+            if not list_is_str and not list_is_int:
+                raise ValueError(f"Invalid neighbour list {entity_number}: all values must be either ints or strs")
+            if not self.to_abs_ids and not list_is_int:
+                raise ValueError(f"Invalid neighbour list {entity_number} - all values must be ints")
+            if self.use_rel_ids != list_is_str:
+                # Convert entity IDs to relative IDs or vice versa
+                old_list = data.copy()
+                data.clear()
+                for val in old_list:
+                    if self.use_rel_ids:
+                        data.append(self._make_rel_id(entity_number, val))
+                    else:
+                        data.append(self._parse_rel_id(entity_number, val))
 
-    def _make_rel_id(self, entity_number: EID, entity_id: EID) -> str:
-        assert type(entity_id) == int
-        entity = self.entity_ids[entity_number]
-        info = self.entity_ids.get(entity_id)
-        if info is None:
-            raise ValueError(f"Unrecognized entity ID {entity_id} in {entity.path}")
-        if len(info.names) > 1:
-            raise ValueError(f"Entity ID {entity_id} in {entity.path} is not unique at {entity.pos}. \n"
-                             f"We never anticipated this to happen with a real Factorio blueprint, "
-                             f"so please report it at https://github.com/nyurik/fatul/issues")
-        x_diff = int_to_coord(info.pos[0] - entity.pos[0])
-        y_diff = int_to_coord(info.pos[1] - entity.pos[1])
-        return f"{x_diff},{y_diff}"
+    def _make_rel_id(self, from_entity_number: EID, to_entity_id: EID) -> str:
+        assert type(to_entity_id) == int
+        from_entity = self.entity_ids[from_entity_number]
+        to_entity = self.entity_ids.get(to_entity_id)
+        if to_entity is None:
+            raise ValueError(f"Unrecognized entity ID {to_entity_id} in {self.label}:\n" + to_json(from_entity.entity))
+        x_diff = int_to_coord(to_entity.pos[0] - from_entity.pos[0])
+        y_diff = int_to_coord(to_entity.pos[1] - from_entity.pos[1])
+        result = f"{x_diff},{y_diff}"
+        if to_entity.hash is not None:
+            result += f",{to_entity.hash}"
+        return result
 
     def _parse_rel_id(self, entity_number: EID, rel_id: str) -> EID:
         assert type(rel_id) == str
-        entity = self.entity_ids[entity_number]
-        rel_parts = rel_id.split(",", 2)
-        if len(rel_parts) != 2:
-            raise ValueError(f"Unrecognized relative ID {rel_id} in {entity.path}")
-        pos = Position((entity.pos[0] + coord_to_int(float(rel_parts[0])),
-                        entity.pos[1] + coord_to_int(float(rel_parts[1]))))
-        entity_id = self.position_to_entity_id.get(pos)
-        if entity_id is None:
-            raise ValueError(f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {entity.path}")
-        return entity_id
+        pe = self.entity_ids[entity_number]
+        rel_parts = rel_id.split(",", 3)
+        if len(rel_parts) < 2 or len(rel_parts) > 3:
+            raise ValueError(f"Unrecognized relative ID {rel_id} in {self.label}:\n" + to_json(pe.entity))
+        pos = Position((pe.pos[0] + coord_to_int(float(rel_parts[0])),
+                        pe.pos[1] + coord_to_int(float(rel_parts[1]))))
+        ids = self.position_to_entity_ids.get(pos)
+        if ids is None:
+            raise ValueError(
+                f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {self.label}:\n" + to_json(pe.entity))
+        if len(ids) == 1:
+            if len(rel_parts) == 3:
+                eprint(f"Warning: ignoring hash {rel_parts[2]} in {self.label}")
+            return ids[0]
+        if len(rel_parts) == 2:
+            raise ValueError(
+                f"Ambiguous relative ID {rel_id} must have had a hash in {self.label}:\n" + to_json(pe.entity))
+        ids = [v for v in ids if self.entity_ids[v].hash == rel_parts[2]]
+        if len(ids) == 0:
+            raise ValueError(f"Hash for relative ID {rel_id} not found in {self.label}:\n" + to_json(pe.entity))
+        return ids[0]
+
+    def set_new_entity_id(self, entity_data: dict) -> None:
+        assert "entity_number" not in entity_data
+        while self.new_id in self.entity_ids:
+            self.new_id += 1
+        # Entity number is created as a first key by Factorio, keep it consistent
+        tmp = entity_data.copy()
+        entity_data.clear()
+        entity_data["entity_number"] = self.new_id
+        entity_data.update(tmp)
+        self.new_id += 1
+
+
+class Blueprint:
+    def __init__(self, processor: Processor, data: dict, to_abs_ids: bool):
+        self.sort_entities = processor.sort_entities
+        self.override_shift = processor.override_shift
+        self.blueprint = data["blueprint"]
+        self.label = get_label(data)
+        self.entities = self.blueprint.get("entities", [])
+        self.ids = IdEncoder(self.label, to_abs_ids, processor.use_rel_ids)
+
+    def cache_entity_numbers(self) -> None:
+        for idx, entity_data in enumerate(self.entities):
+            if "entity_number" not in entity_data:
+                raise ValueError(f"Missing entity_number in {self.label}:\n" + to_json(entity_data))
+            self.ids.save_entity_info(entity_data)
+
+    def create_new_entity_numbers(self) -> None:
+        missing_ids = []
+        for idx, entity_data in enumerate(self.entities):
+            if "entity_number" not in entity_data:
+                missing_ids.append(idx)
+            else:
+                self.ids.save_entity_info(entity_data)
+        for idx in missing_ids:
+            self.ids.set_new_entity_id(self.entities[idx])
+            self.ids.save_entity_info(self.entities[idx])
+
+    def delete_entity_numbers(self):
+        for entity_data in self.entities:
+            del entity_data["entity_number"]
+
+    def update_references(self):
+        # Recursively switch between entity_id and entity_rel (relative position)
+        for entity_data in self.entities:
+            self.ids.update_rel_ids(entity_data["entity_number"], entity_data)
 
     def shift_by_usage(self):
         hist_x = self.calc_histogram("x", by_name=False)
@@ -685,13 +697,11 @@ class Blueprint:
 def sort_dicts_rec(data: Any) -> None:
     if type(data) == dict:
         for val in data.values():
-            if type(val) in COMPLEX_TYPES:
-                sort_dicts_rec(val)
+            sort_dicts_rec(val)
         sort_dict(data)
     elif type(data) == list:
         for val in data:
-            if type(val) in COMPLEX_TYPES:
-                sort_dicts_rec(val)
+            sort_dicts_rec(val)
 
 
 def sort_dict(data) -> None:
@@ -744,11 +754,36 @@ def int_to_coord(val: int) -> Union[float, int]:
 
 def get_label(data: dict) -> str:
     key = get_non_index_key(data)
-    return data[key].get("label", data[key].get("item", key))
+    label = data[key].get("label")
+    if label is None:
+        label = data[key].get("item", key)
+    return label
 
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
+
+def get_obj_hash(obj: Any) -> str:
+    """get a short string hash of the object, ignoring unstable values like entity IDs"""
+
+    def _rm_volatile(o: Any):
+        if type(o) == dict:
+            for k, v in list(o.items()):
+                if k in ("position", "entity_id", "entity_number", "entity_rel", "neighbours"):
+                    del o[k]
+                else:
+                    _rm_volatile(v)
+        elif type(o) == list:
+            for v in o:
+                _rm_volatile(v)
+
+    # deep clone the object and remove values that are not likely to stay the same
+    obj = json.loads(json.dumps(obj))
+    _rm_volatile(obj)
+    # sort the object to ensure the hash is stable
+    sort_dicts_rec(obj)
+    return hashlib.md5(to_json(obj).encode("utf-8")).hexdigest()[:4]
 
 
 def to_json(data):

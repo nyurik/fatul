@@ -33,7 +33,6 @@ run-tests:
     {{DECODE}} test/build/bp_power__decoded.json test/raw/bp_power.txt
     {{DUMP}} -p test/build/bp_power.json test/raw/bp_power.txt
     {{DECODE}} -p --ids keep --sort none test/build/bp_power__ids=keep.json test/raw/bp_power.txt
-
     {{ENCODE}} test/build/bp_power__ids=keep.json - | {{DUMP}} -p test/build/bp_power__ids=keep__encoded.json -
     {{DECODE}} -p --ids refs --sort none test/build/bp_power__ids=refs.json test/raw/bp_power.txt
     {{ENCODE}} test/build/bp_power__ids=refs.json - | {{DUMP}} -p test/build/bp_power__ids=refs__encoded.json -
@@ -54,6 +53,18 @@ run-tests:
     {{DECODE}} -p --ids keep --sort entities test/build/bp_logic__sort=entities.json test/raw/bp_logic.txt
     {{DECODE}} -p --ids keep --sort keys test/build/bp_logic__sort=keys.json test/raw/bp_logic.txt
     {{DECODE}} -p --ids keep --sort all test/build/bp_logic__sort=all.json test/raw/bp_logic.txt
+
+    {{DECODE}} test/build/bp_dup__decoded.json test/raw/bp_dup.txt
+    {{DUMP}} -p test/build/bp_dup.json test/raw/bp_dup.txt
+    {{DECODE}} -p --ids keep --sort none test/build/bp_dup__ids=keep.json test/raw/bp_dup.txt
+    {{ENCODE}} test/build/bp_dup__ids=keep.json test/build/bp_dup__ids=keep__encoded.txt
+    {{DECODE}} -p --ids refs --sort none test/build/bp_dup__ids=refs.json test/raw/bp_dup.txt
+    {{ENCODE}} test/build/bp_dup__ids=refs.json test/build/bp_dup__ids=refs__encoded.txt
+    {{DECODE}} -p --ids mixed --sort none test/build/bp_dup__ids=mixed.json test/raw/bp_dup.txt
+    {{ENCODE}} test/build/bp_dup__ids=mixed.json test/build/bp_dup__ids=mixed__encoded.txt
+    {{DECODE}} -p --ids keep --sort entities test/build/bp_dup__sort=entities.json test/raw/bp_dup.txt
+    {{DECODE}} -p --ids keep --sort keys test/build/bp_dup__sort=keys.json test/raw/bp_dup.txt
+    {{DECODE}} -p --ids keep --sort all test/build/bp_dup__sort=all.json test/raw/bp_dup.txt
 
     {{DUMP}} -p test/build/rm_empty    test/raw/rm_empty.txt
     {{DUMP}} -p test/build/bk_empty    test/raw/bk_empty.txt
