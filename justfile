@@ -33,11 +33,11 @@ run-tests:
     {{DECODE}} test/build/bp_power__decoded.json test/raw/bp_power.txt
     {{DUMP}} -p test/build/bp_power.json test/raw/bp_power.txt
     {{DECODE}} -p --ids keep --sort none test/build/bp_power__ids=keep.json test/raw/bp_power.txt
-    {{ENCODE}} test/build/bp_power__ids=keep.json - | {{DUMP}} -p test/build/bp_power__ids=keep__encoded.json -
+    {{ENCODE}} test/build/bp_power__ids=keep.json test/build/bp_power__ids=keep__encoded.txt
     {{DECODE}} -p --ids refs --sort none test/build/bp_power__ids=refs.json test/raw/bp_power.txt
-    {{ENCODE}} test/build/bp_power__ids=refs.json - | {{DUMP}} -p test/build/bp_power__ids=refs__encoded.json -
+    {{ENCODE}} test/build/bp_power__ids=refs.json test/build/bp_power__ids=refs__encoded.txt
     {{DECODE}} -p --ids mixed --sort none test/build/bp_power__ids=mixed.json test/raw/bp_power.txt
-    {{ENCODE}} test/build/bp_power__ids=mixed.json - | {{DUMP}} -p test/build/bp_power__ids=mixed__encoded.json -
+    {{ENCODE}} test/build/bp_power__ids=mixed.json test/build/bp_power__ids=mixed__encoded.txt
     {{DECODE}} -p --ids keep --sort entities test/build/bp_power__sort=entities.json test/raw/bp_power.txt
     {{DECODE}} -p --ids keep --sort keys test/build/bp_power__sort=keys.json test/raw/bp_power.txt
     {{DECODE}} -p --ids keep --sort all test/build/bp_power__sort=all.json test/raw/bp_power.txt
@@ -45,11 +45,11 @@ run-tests:
     {{DECODE}} test/build/bp_logic__decoded.json test/raw/bp_logic.txt
     {{DUMP}} -p test/build/bp_logic.json test/raw/bp_logic.txt
     {{DECODE}} -p --ids keep --sort none test/build/bp_logic__ids=keep.json test/raw/bp_logic.txt
-    {{ENCODE}} test/build/bp_logic__ids=keep.json - | {{DUMP}} -p test/build/bp_logic__ids=keep__encoded.json -
+    {{ENCODE}} test/build/bp_logic__ids=keep.json test/build/bp_logic__ids=keep__encoded.txt
     {{DECODE}} -p --ids refs --sort none test/build/bp_logic__ids=refs.json test/raw/bp_logic.txt
-    {{ENCODE}} test/build/bp_logic__ids=refs.json - | {{DUMP}} -p test/build/bp_logic__ids=refs__encoded.json -
+    {{ENCODE}} test/build/bp_logic__ids=refs.json test/build/bp_logic__ids=refs__encoded.txt
     {{DECODE}} -p --ids mixed --sort none test/build/bp_logic__ids=mixed.json test/raw/bp_logic.txt
-    {{ENCODE}} test/build/bp_logic__ids=mixed.json - | {{DUMP}} -p test/build/bp_logic__ids=mixed__encoded.json -
+    {{ENCODE}} test/build/bp_logic__ids=mixed.json test/build/bp_logic__ids=mixed__encoded.txt
     {{DECODE}} -p --ids keep --sort entities test/build/bp_logic__sort=entities.json test/raw/bp_logic.txt
     {{DECODE}} -p --ids keep --sort keys test/build/bp_logic__sort=keys.json test/raw/bp_logic.txt
     {{DECODE}} -p --ids keep --sort all test/build/bp_logic__sort=all.json test/raw/bp_logic.txt
@@ -71,12 +71,12 @@ run-tests:
     {{DUMP}} -p test/build/bk_empty_bp test/raw/bk_empty_bp.txt
     {{DUMP}} -p test/build/bk_nested   test/raw/bk_nested.txt
 
-    {{ENCODE}} test/build/rm_empty.json - | {{DUMP}} -p test/build/rm_empty2.json -
-    {{ENCODE}} test/build/bk_empty      - | {{DUMP}} -p test/build/bk_empty.json -
-    {{ENCODE}} test/build/bk_empty_bp   - | {{DUMP}} -p test/build/bk_empty_bp.json -
-    {{ENCODE}} test/build/bk_nested     - | {{DUMP}} -p test/build/bk_nested.json -
+    {{ENCODE}} test/build/rm_empty.json test/build/rm_empty2.txt
+    {{ENCODE}} test/build/bk_empty      test/build/bk_empty.txt
+    {{ENCODE}} test/build/bk_empty_bp   test/build/bk_empty_bp.txt
+    {{ENCODE}} test/build/bk_nested     test/build/bk_nested.txt
 
-    {{ENCODE}} test/build/bk_nested/blueprint.json - | {{DUMP}} -p test/build/bk_nested-bp.json -
+    {{ENCODE}} test/build/bk_nested/blueprint.json test/build/bk_nested-bp.txt
     {{ENCODE}} test/build/bk_nested/blueprint.json - | {{DECODE}} -p test/build/bk_nested/blueprint.json -
 
     {{DUMP}} test/build/bp_edit1_dump.json test/raw/bp_edit1.txt
