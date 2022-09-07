@@ -30,8 +30,8 @@
           "2": {
             "red": [
               {"circuit_id": 2, "entity_rel": "-4,0"},
-              {"entity_rel": "0.5,2,9326"},
-              {"entity_rel": "0.5,2,57ea"}
+              {"entity_rel": "0.5,2,57ea"},
+              {"entity_rel": "0.5,2,9326"}
             ]
           }
         },
@@ -57,7 +57,7 @@
       {
         "name": "fast-filter-miniloader-inserter",
         "override_stack_size": 1,
-        "connections": {"1": {"red": [{"entity_rel": "0,0,9326"}, {"circuit_id": 2, "entity_rel": "-0.5,-2"}]}},
+        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "-0.5,-2"}, {"entity_rel": "0,0,9326"}]}},
         "control_behavior": {"circuit_mode_of_operation": 1},
         "drop_position": {"x": -0.25, "y": -0.203125},
         "pickup_position": {"x": 0, "y": 0.796875},

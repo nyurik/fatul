@@ -700,8 +700,12 @@ def sort_dicts_rec(data: Any) -> None:
             sort_dicts_rec(val)
         sort_dict(data)
     elif type(data) == list:
+        has_entity_rel = True
         for val in data:
+            has_entity_rel = has_entity_rel and type(val) == dict and "entity_rel" in val
             sort_dicts_rec(val)
+        if has_entity_rel:
+            data.sort(key=lambda v: list(v.items()))
 
 
 def sort_dict(data) -> None:
