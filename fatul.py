@@ -358,9 +358,7 @@ class Processor:
             name = get_label(bp).lower()
             name = re.sub(r"[/\\.:]+", "-", name)
             name = re.sub(r"  +", " ", name)
-            if is_dir:
-                # Books become directories, which are a bit nicer without the spaces
-                name = name.replace(" ", "-")
+            name = name.replace(" ", "-")
             name = re.sub(r"-+", "-", name)
             name = name.strip("_-. ")
             if name in files:
