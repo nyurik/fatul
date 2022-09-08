@@ -356,7 +356,7 @@ class Processor:
         for bp in blueprints:
             is_dir = "blueprint_book" in bp
             name = get_label(bp).lower()
-            name = re.sub(r"[/\\.:]+", "-", name)
+            name = re.sub(r"[/\\.:&|]+", "-", name)
             name = re.sub(r"  +", " ", name)
             name = name.replace(" ", "-")
             name = re.sub(r"-+", "-", name)
