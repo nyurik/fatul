@@ -30,8 +30,8 @@
           "2": {
             "red": [
               {"circuit_id": 2, "entity_rel": "-4,0"},
-              {"entity_rel": "0.5,2,57ea"},
-              {"entity_rel": "0.5,2,9326"}
+              {"entity_rel": "0.5,2,9a25"},
+              {"entity_rel": "0.5,2,bb1d"}
             ]
           }
         },
@@ -48,7 +48,7 @@
       {
         "name": "fast-filter-miniloader-inserter",
         "override_stack_size": 1,
-        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "-0.5,-2"}, {"entity_rel": "0,0,57ea"}]}},
+        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "-0.5,-2"}, {"entity_rel": "0,0,9a25"}]}},
         "control_behavior": {"circuit_mode_of_operation": 1},
         "drop_position": {"x": 0.25, "y": -0.203125},
         "pickup_position": {"x": 0, "y": 0.796875},
@@ -57,7 +57,7 @@
       {
         "name": "fast-filter-miniloader-inserter",
         "override_stack_size": 1,
-        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "-0.5,-2"}, {"entity_rel": "0,0,9326"}]}},
+        "connections": {"1": {"red": [{"circuit_id": 2, "entity_rel": "-0.5,-2"}, {"entity_rel": "0,0,bb1d"}]}},
         "control_behavior": {"circuit_mode_of_operation": 1},
         "drop_position": {"x": -0.25, "y": -0.203125},
         "pickup_position": {"x": 0, "y": 0.796875},

@@ -55,7 +55,7 @@
                 "entity_rel": "-0.5,-2"
               },
               {
-                "entity_rel": "0,0,57ea"
+                "entity_rel": "0,0,9a25"
               }
             ]
           }
@@ -84,7 +84,7 @@
           "1": {
             "red": [
               {
-                "entity_rel": "0,0,9326"
+                "entity_rel": "0,0,bb1d"
               },
               {
                 "circuit_id": 2,
@@ -140,10 +140,10 @@
                 "entity_rel": "-4,0"
               },
               {
-                "entity_rel": "0.5,2,9326"
+                "entity_rel": "0.5,2,bb1d"
               },
               {
-                "entity_rel": "0.5,2,57ea"
+                "entity_rel": "0.5,2,9a25"
               }
             ]
           }

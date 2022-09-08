@@ -499,23 +499,23 @@ class IdEncoder:
         pe = self.entity_ids[entity_number]
         rel_parts = rel_id.split(",", 3)
         if len(rel_parts) < 2 or len(rel_parts) > 3:
-            raise ValueError(f"Unrecognized relative ID {rel_id} in {self.label}:\n" + to_json(pe.entity))
+            raise ValueError(f"Unrecognized relative ID {rel_id} in {self.label}:\n{to_json(pe.entity)}")
         pos = Position((pe.pos[0] + coord_to_int(float(rel_parts[0])),
                         pe.pos[1] + coord_to_int(float(rel_parts[1]))))
         ids = self.position_to_entity_ids.get(pos)
         if ids is None:
             raise ValueError(
-                f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {self.label}:\n" + to_json(pe.entity))
+                f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {self.label}:\n{to_json(pe.entity)}")
         if len(ids) == 1:
             if len(rel_parts) == 3:
                 eprint(f"Warning: ignoring hash {rel_parts[2]} in {self.label}")
             return ids[0]
         if len(rel_parts) == 2:
             raise ValueError(
-                f"Ambiguous relative ID {rel_id} must have had a hash in {self.label}:\n" + to_json(pe.entity))
+                f"Ambiguous relative ID {rel_id} must have had a hash in {self.label}:\n{to_json(pe.entity)}")
         ids = [v for v in ids if self.entity_ids[v].hash == rel_parts[2]]
         if len(ids) == 0:
-            raise ValueError(f"Hash for relative ID {rel_id} not found in {self.label}:\n" + to_json(pe.entity))
+            raise ValueError(f"Hash for relative ID {rel_id} not found in {self.label}:\n{to_json(pe.entity)}")
         return ids[0]
 
     def set_new_entity_id(self, entity_data: dict) -> None:
@@ -774,7 +774,7 @@ def get_obj_hash(obj: Any) -> str:
     def _rm_volatile(o: Any):
         if type(o) == dict:
             for k, v in list(o.items()):
-                if k in ("position", "entity_id", "entity_number", "entity_rel", "neighbours"):
+                if k in ("connections", "position", "entity_id", "entity_number", "entity_rel", "neighbours"):
                     del o[k]
                 else:
                     _rm_volatile(v)
