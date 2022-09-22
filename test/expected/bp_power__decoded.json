@@ -5,7 +5,7 @@
     "shift_y": -20,
     "version": 281479275675648,
     "entities": [
-      {"name": "big-electric-pole", "neighbours": ["5.5,1.5", "0.5,5.5"], "position": {"x": 0, "y": 0}},
+      {"name": "big-electric-pole", "neighbours": ["0.5,5.5", "5.5,1.5"], "position": {"x": 0, "y": 0}},
       {"name": "medium-electric-pole", "neighbours": ["-0.5,-5.5"], "position": {"x": 0.5, "y": 5.5}},
       {"name": "small-electric-pole", "neighbours": ["-5.5,-1.5"], "position": {"x": 5.5, "y": 1.5}}
     ],

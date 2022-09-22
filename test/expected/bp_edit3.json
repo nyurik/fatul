@@ -37,42 +37,42 @@
       {"name": "inserter", "direction": 6, "position": {"x": 11.5, "y": 15.5}},
       {
         "name": "small-electric-pole",
-        "neighbours": ["4,0", "6,0", "0,6"],
+        "neighbours": ["0,6", "4,0", "6,0"],
         "position": {"x": 1.5, "y": 4.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["3.5,-2.5", "-4,0", "6,0", "0,6", "2,6"],
+        "neighbours": ["-4,0", "0,6", "2,6", "3.5,-2.5", "6,0"],
         "position": {"x": 5.5, "y": 4.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["1.5,-2.5", "-6,0", "4,0", "-2,6", "0,6"],
+        "neighbours": ["-2,6", "-6,0", "0,6", "1.5,-2.5", "4,0"],
         "position": {"x": 7.5, "y": 4.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-6,0", "-4,0", "0,6"],
+        "neighbours": ["-4,0", "-6,0", "0,6"],
         "position": {"x": 11.5, "y": 4.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["0,-6", "4,0", "6,0", "0,6"],
+        "neighbours": ["0,-6", "0,6", "4,0", "6,0"],
         "position": {"x": 1.5, "y": 10.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["0,-6", "2,-6", "-4,0", "6,0", "0,6"],
+        "neighbours": ["-4,0", "0,-6", "0,6", "2,-6", "6,0"],
         "position": {"x": 5.5, "y": 10.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-2,-6", "0,-6", "-6,0", "4,0", "0,6"],
+        "neighbours": ["-2,-6", "-6,0", "0,-6", "0,6", "4,0"],
         "position": {"x": 7.5, "y": 10.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["0,-6", "-6,0", "-4,0", "0,6"],
+        "neighbours": ["-4,0", "-6,0", "0,-6", "0,6"],
         "position": {"x": 11.5, "y": 10.5}
       },
       {
@@ -82,20 +82,20 @@
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["0,-6", "-4,0", "6,0"],
+        "neighbours": ["-4,0", "0,-6", "6,0"],
         "position": {"x": 5.5, "y": 16.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["0,-6", "-6,0", "4,0"],
+        "neighbours": ["-6,0", "0,-6", "4,0"],
         "position": {"x": 7.5, "y": 16.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["0,-6", "-6,0", "-4,0"],
+        "neighbours": ["-4,0", "-6,0", "0,-6"],
         "position": {"x": 11.5, "y": 16.5}
       },
-      {"name": "substation", "neighbours": ["-3.5,2.5", "-1.5,2.5"], "position": {"x": 9, "y": 2}},
+      {"name": "substation", "neighbours": ["-1.5,2.5", "-3.5,2.5"], "position": {"x": 9, "y": 2}},
       {"name": "transport-belt", "direction": 2, "position": {"x": -0.5, "y": -0.5}},
       {"name": "transport-belt", "direction": 2, "position": {"x": 0.5, "y": -0.5}},
       {"name": "transport-belt", "direction": 2, "position": {"x": 1.5, "y": -0.5}},

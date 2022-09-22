@@ -43,37 +43,37 @@
       {"name": "inserter", "direction": 6, "position": {"x": 11.5, "y": 14.5}},
       {
         "name": "small-electric-pole",
-        "neighbours": ["-4.5,-5.5", "4,0", "6,0", "0,6"],
+        "neighbours": ["-4.5,-5.5", "0,6", "4,0", "6,0"],
         "position": {"x": 1.5, "y": 3.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-4,0", "6,0", "0,6", "2,6"],
+        "neighbours": ["-4,0", "0,6", "2,6", "6,0"],
         "position": {"x": 5.5, "y": 3.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-6,0", "4,0", "-2,6", "0,6"],
+        "neighbours": ["-2,6", "-6,0", "0,6", "4,0"],
         "position": {"x": 7.5, "y": 3.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-6,0", "-4,0", "0,6"],
+        "neighbours": ["-4,0", "-6,0", "0,6"],
         "position": {"x": 11.5, "y": 3.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["0,-6", "4,0", "6,0", "0,6"],
+        "neighbours": ["0,-6", "0,6", "4,0", "6,0"],
         "position": {"x": 1.5, "y": 9.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-4,0", "0,-6", "2,-6", "6,0", "0,6"],
+        "neighbours": ["-4,0", "0,-6", "0,6", "2,-6", "6,0"],
         "position": {"x": 5.5, "y": 9.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-6,0", "-2,-6", "0,-6", "4,0", "0,6"],
+        "neighbours": ["-2,-6", "-6,0", "0,-6", "0,6", "4,0"],
         "position": {"x": 7.5, "y": 9.5}
       },
       {
@@ -93,12 +93,12 @@
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-6,0", "0,-6", "-4,0", "0,6"],
+        "neighbours": ["-4,0", "-6,0", "0,-6", "0,6"],
         "position": {"x": 11.5, "y": 9.5}
       },
       {
         "name": "small-electric-pole",
-        "neighbours": ["-6,0", "0,-6", "-4,0"],
+        "neighbours": ["-4,0", "-6,0", "0,-6"],
         "position": {"x": 11.5, "y": 15.5}
       },
       {"name": "substation", "neighbours": ["4.5,5.5"], "position": {"x": -3, "y": -2}},
