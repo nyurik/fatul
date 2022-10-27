@@ -1,0 +1,186 @@
+{
+  "blueprint": {
+    "icons": [
+      {
+        "signal": {
+          "type": "item",
+          "name": "locomotive"
+        },
+        "index": 1
+      }
+    ],
+    "entities": [
+      {
+        "entity_number": 2,
+        "name": "cargo-wagon",
+        "position": {
+          "x": 0,
+          "y": 4.96875
+        },
+        "orientation": 0.5,
+        "inventory": null
+      },
+      {
+        "entity_number": 7,
+        "name": "locomotive",
+        "position": {
+          "x": 0,
+          "y": 11.96875
+        },
+        "orientation": 0.5,
+        "items": {
+          "rocket-fuel": 1
+        }
+      },
+      {
+        "entity_number": 1,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "entity_number": 3,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 2
+        }
+      },
+      {
+        "entity_number": 4,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 4
+        }
+      },
+      {
+        "entity_number": 5,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 6
+        }
+      },
+      {
+        "entity_number": 6,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "entity_number": 8,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 10
+        }
+      },
+      {
+        "entity_number": 9,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 12
+        }
+      },
+      {
+        "entity_number": 10,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 14
+        }
+      },
+      {
+        "entity_number": 11,
+        "name": "straight-rail",
+        "position": {
+          "x": 0,
+          "y": 16
+        }
+      }
+    ],
+    "schedules": [
+      {
+        "locomotives": [
+          7
+        ],
+        "schedule": [
+          {
+            "station": "Elevator/Re-Fuel",
+            "wait_conditions": [
+              {
+                "compare_type": "or",
+                "type": "inactivity",
+                "ticks": 60
+              }
+            ]
+          },
+          {
+            "station": "[img=entity/se-space-elevator]  Elevator ↑"
+          },
+          {
+            "station": "Shipyard/Waste-Supply",
+            "wait_conditions": [
+              {
+                "compare_type": "or",
+                "type": "full"
+              },
+              {
+                "compare_type": "and",
+                "type": "circuit",
+                "condition": {
+                  "first_signal": {
+                    "type": "virtual",
+                    "name": "signal-red"
+                  },
+                  "constant": 0,
+                  "comparator": "="
+                }
+              },
+              {
+                "compare_type": "or",
+                "type": "inactivity",
+                "ticks": 3600
+              },
+              {
+                "compare_type": "and",
+                "type": "circuit",
+                "condition": {
+                  "first_signal": {
+                    "type": "virtual",
+                    "name": "signal-green"
+                  },
+                  "constant": 0,
+                  "comparator": ">"
+                }
+              }
+            ]
+          },
+          {
+            "station": "[img=entity/se-space-elevator]  Elevator ↓"
+          },
+          {
+            "station": "Shipyard/Waste-Receive",
+            "wait_conditions": [
+              {
+                "compare_type": "or",
+                "type": "empty"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "item": "blueprint",
+    "label": "Lost Schedlue Test",
+    "version": 281479276265473,
+    "shift_x": 395,
+    "shift_y": 307
+  }
+}

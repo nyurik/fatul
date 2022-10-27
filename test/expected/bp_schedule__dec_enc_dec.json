@@ -1,0 +1,184 @@
+{
+  "blueprint": {
+    "item": "blueprint",
+    "label": "Lost Schedlue Test",
+    "version": 281479276265473,
+    "entities": [
+      {
+        "entity_number": 1,
+        "name": "cargo-wagon",
+        "inventory": null,
+        "orientation": 0.5,
+        "position": {
+          "x": 395,
+          "y": 311.96875
+        }
+      },
+      {
+        "entity_number": 2,
+        "name": "locomotive",
+        "orientation": 0.5,
+        "items": {
+          "rocket-fuel": 1
+        },
+        "position": {
+          "x": 395,
+          "y": 318.96875
+        }
+      },
+      {
+        "entity_number": 3,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 307
+        }
+      },
+      {
+        "entity_number": 4,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 309
+        }
+      },
+      {
+        "entity_number": 5,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 311
+        }
+      },
+      {
+        "entity_number": 6,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 313
+        }
+      },
+      {
+        "entity_number": 7,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 315
+        }
+      },
+      {
+        "entity_number": 8,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 317
+        }
+      },
+      {
+        "entity_number": 9,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 319
+        }
+      },
+      {
+        "entity_number": 10,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 321
+        }
+      },
+      {
+        "entity_number": 11,
+        "name": "straight-rail",
+        "position": {
+          "x": 395,
+          "y": 323
+        }
+      }
+    ],
+    "icons": [
+      {
+        "index": 1,
+        "signal": {
+          "name": "locomotive",
+          "type": "item"
+        }
+      }
+    ],
+    "schedules": [
+      {
+        "locomotives": [
+          2
+        ],
+        "schedule": [
+          {
+            "station": "Elevator/Re-Fuel",
+            "wait_conditions": [
+              {
+                "compare_type": "or",
+                "ticks": 60,
+                "type": "inactivity"
+              }
+            ]
+          },
+          {
+            "station": "[img=entity/se-space-elevator]  Elevator ↑"
+          },
+          {
+            "station": "Shipyard/Waste-Supply",
+            "wait_conditions": [
+              {
+                "compare_type": "or",
+                "type": "full"
+              },
+              {
+                "compare_type": "and",
+                "type": "circuit",
+                "condition": {
+                  "comparator": "=",
+                  "constant": 0,
+                  "first_signal": {
+                    "name": "signal-red",
+                    "type": "virtual"
+                  }
+                }
+              },
+              {
+                "compare_type": "or",
+                "ticks": 3600,
+                "type": "inactivity"
+              },
+              {
+                "compare_type": "and",
+                "type": "circuit",
+                "condition": {
+                  "comparator": ">",
+                  "constant": 0,
+                  "first_signal": {
+                    "name": "signal-green",
+                    "type": "virtual"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "station": "[img=entity/se-space-elevator]  Elevator ↓"
+          },
+          {
+            "station": "Shipyard/Waste-Receive",
+            "wait_conditions": [
+              {
+                "compare_type": "or",
+                "type": "empty"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
