@@ -88,11 +88,12 @@ def main():
     decoder.add_argument("--ids", choices=get_args(IdsMode), default="refs",
                          help=textwrap.dedent("""\
                          How to process the entity_number and entity_id values - '%(default)s' by default
-                            * refs  - convert entity_id and neighbours values to relative references.
-                                      storing the delta x,y relative to the current entity.
+                            * refs  - convert entity_id values to relative references.
+                                      Set neighbours to the delta x,y relative to the current entity.
+                                      Set schedules.locomotives to the absolute x,y of their position. 
                                       The original entity_id and entity_number values will be removed.
                             * mixed - Same as refs, but do not delete original entity_id values.
-                            * keep  - Do not convert entity_id and neighbours values."""))
+                            * keep  - Do not convert entity_id values."""))
     decoder.add_argument("--sort", choices=get_args(SortMode), default="all",
                          help=textwrap.dedent("""\
                          Order keys and entities in the output. (default = '%(default)s').
@@ -410,6 +411,8 @@ class IdEncoder:
         self.entity_ids: Dict[EID, PosEntity] = {}
         self.position_to_entity_ids: Dict[Position, List[EID]] = {}
         self.new_id = EID(1)
+        self.min_x: Optional[int] = None
+        self.min_y: Optional[int] = None
 
     def save_entity_info(self, entity_data: dict) -> None:
         eid = entity_data["entity_number"]
@@ -425,6 +428,10 @@ class IdEncoder:
             raise ValueError(
                 f"Unrecognized position object {to_json(position)} in {self.label}:\n" + to_json(entity_data))
         pos = Position((coord_to_int(x), coord_to_int(y)))
+        if self.min_x is None or self.min_x > pos[0]:
+            self.min_x = pos[0]
+        if self.min_y is None or self.min_y > pos[1]:
+            self.min_y = pos[1]
         self.entity_ids[eid] = PosEntity(pos, entity_data)
         ids = self.position_to_entity_ids.get(pos)
         if ids is None:
@@ -463,47 +470,69 @@ class IdEncoder:
                 for val in data:
                     self.update_rel_ids(entity_number, val)
                 return
-            list_is_int = all(type(v) == int for v in data)
-            list_is_str = all(type(v) == str for v in data)
-            if not list_is_str and not list_is_int:
-                raise ValueError(f"Invalid neighbour list {entity_number}: all values must be either ints or strs")
-            if not self.to_abs_ids and not list_is_int:
-                raise ValueError(f"Invalid neighbour list {entity_number} - all values must be ints")
-            if self.use_rel_ids != list_is_str:
-                # Convert entity IDs to relative IDs or vice versa
-                old_list = data.copy()
-                data.clear()
-                for val in old_list:
-                    if self.use_rel_ids:
-                        data.append(self._make_rel_id(entity_number, val))
-                    else:
-                        data.append(self._parse_rel_id(entity_number, val))
+            self.update_ref_list(data, entity_number, parent_key)
 
-    def _make_rel_id(self, from_entity_number: EID, to_entity_id: EID) -> str:
+    def update_ref_list(self, data, entity_number, typ):
+        list_is_int = all(type(v) == int for v in data)
+        list_is_str = all(type(v) == str for v in data)
+        if not list_is_str and not list_is_int:
+            raise ValueError(f"Invalid {typ} list {entity_number}: all values must be either ints or strs")
+        if not self.to_abs_ids and not list_is_int:
+            raise ValueError(f"Invalid {typ} list {entity_number} - all values must be ints")
+        if self.use_rel_ids != list_is_str:
+            # Convert entity IDs to relative IDs or vice versa
+            old_list = data.copy()
+            data.clear()
+            for val in old_list:
+                if self.use_rel_ids:
+                    data.append(self._make_rel_id(entity_number, val, typ))
+                else:
+                    data.append(self._parse_rel_id(entity_number, val, typ))
+
+    def _make_rel_id(self, from_entity_number: EID, to_entity_id: EID, typ: Optional[str] = None) -> str:
+        """Convert an absolute entity ID to a relative ID.
+           from_entity_number is the ID of the current entity,
+           unless typ is "locomotives", in which case it is just a debug string."""
         assert type(to_entity_id) == int
-        from_entity = self.entity_ids[from_entity_number]
+        if typ != "locomotives":
+            from_entity = self.entity_ids[from_entity_number]
+            from_x, from_y = from_entity.pos
+        else:
+            from_entity = None
+            from_x, from_y = self.min_x, self.min_y
         to_entity = self.entity_ids.get(to_entity_id)
         if to_entity is None:
-            raise ValueError(f"Unrecognized entity ID {to_entity_id} in {self.label}:\n" + to_json(from_entity.entity))
-        x_diff = int_to_coord(to_entity.pos[0] - from_entity.pos[0])
-        y_diff = int_to_coord(to_entity.pos[1] - from_entity.pos[1])
+            extra = ":\n" + to_json(from_entity.entity) if from_entity is not None else f" in {from_entity_number}"
+            raise ValueError(f"Unrecognized entity ID {to_entity_id} in {self.label}{extra}")
+        x_diff = int_to_coord(to_entity.pos[0] - from_x)
+        y_diff = int_to_coord(to_entity.pos[1] - from_y)
         result = f"{x_diff},{y_diff}"
         if to_entity.hash is not None:
             result += f",{to_entity.hash}"
         return result
 
-    def _parse_rel_id(self, entity_number: EID, rel_id: str) -> EID:
+    def _parse_rel_id(self, entity_number: EID, rel_id: str, typ: Optional[str] = None) -> EID:
+        """Convert a relative entity value to an entity ID.
+           entity_number is the ID of the current entity,
+           unless typ is "locomotives", in which case it is just a debug string."""
         assert type(rel_id) == str
-        pe = self.entity_ids[entity_number]
+        if typ != "locomotives":
+            pe = self.entity_ids[entity_number]
+            from_x, from_y = pe.pos
+        else:
+            pe = None
+            from_x, from_y = self.min_x, self.min_y
         rel_parts = rel_id.split(",", 3)
         if len(rel_parts) < 2 or len(rel_parts) > 3:
-            raise ValueError(f"Unrecognized relative ID {rel_id} in {self.label}:\n{to_json(pe.entity)}")
-        pos = Position((pe.pos[0] + coord_to_int(float(rel_parts[0])),
-                        pe.pos[1] + coord_to_int(float(rel_parts[1]))))
+            extra = ":\n" + to_json(pe.entity) if pe is not None else f" in {entity_number}"
+            raise ValueError(f"Unrecognized relative ID {rel_id} in {self.label}{extra}")
+        pos = Position((from_x + coord_to_int(float(rel_parts[0])),
+                        from_y + coord_to_int(float(rel_parts[1]))))
         ids = self.position_to_entity_ids.get(pos)
         if ids is None:
+            extra = ":\n" + to_json(pe.entity) if pe is not None else f" in {entity_number}"
             raise ValueError(
-                f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {self.label}:\n{to_json(pe.entity)}")
+                f"No entities found for relative ID {rel_id} ({pos[0], pos[1]}) in {self.label}{extra}")
         if len(ids) == 1:
             if len(rel_parts) == 3:
                 eprint(f"Warning: ignoring hash {rel_parts[2]} in {self.label}")
@@ -562,6 +591,8 @@ class Blueprint:
         # Recursively switch between entity_id and entity_rel (relative position)
         for entity_data in self.entities:
             self.ids.update_rel_ids(entity_data["entity_number"], entity_data)
+        for idx, locomotive in enumerate(self.blueprint.get("schedules", [])):
+            self.ids.update_ref_list(locomotive["locomotives"], f"schedule[{idx}]", "locomotives")
 
     def shift_by_usage(self):
         hist_x = self.calc_histogram("x", by_name=False)
