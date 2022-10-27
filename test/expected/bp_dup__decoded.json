@@ -71,7 +71,7 @@
             "red": [{"circuit_id": 1, "entity_rel": "-0.5,-2"}, {"entity_rel": "0,7"}]
           }
         },
-        "neighbours": ["3,0", "0,7"],
+        "neighbours": ["0,7", "3,0"],
         "position": {"x": 0.5, "y": 2.5}
       },
       {
@@ -94,7 +94,7 @@
       {
         "name": "medium-electric-pole",
         "connections": {"1": {"green": [{"entity_rel": "0,-7"}], "red": [{"entity_rel": "0,-7"}]}},
-        "neighbours": ["0,-7", "-3,0"],
+        "neighbours": ["-3,0", "0,-7"],
         "position": {"x": 3.5, "y": 9.5}
       }
     ],

@@ -723,10 +723,10 @@ class Blueprint:
         return Histogram(res)
 
 
-def sort_dicts_rec(data: Any) -> None:
+def sort_dicts_rec(data: Any, parent: Optional[str]=None) -> None:
     if type(data) == dict:
-        for val in data.values():
-            sort_dicts_rec(val)
+        for key, val in data.items():
+            sort_dicts_rec(val, key)
         sort_dict(data)
     elif type(data) == list:
         has_entity_rel = True
@@ -735,6 +735,8 @@ def sort_dicts_rec(data: Any) -> None:
             sort_dicts_rec(val)
         if has_entity_rel:
             data.sort(key=lambda v: list(v.items()))
+        elif parent == "neighbours":
+            data.sort()
 
 
 def sort_dict(data) -> None:

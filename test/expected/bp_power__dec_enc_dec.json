@@ -7,8 +7,8 @@
         "entity_number": 1,
         "name": "big-electric-pole",
         "neighbours": [
-          3,
-          2
+          2,
+          3
         ],
         "position": {
           "x": -290,
