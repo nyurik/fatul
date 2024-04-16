@@ -184,7 +184,7 @@ def decode(source: Path, destination: Path, verbose: bool, compact: bool,
         if not source.is_file():
             raise ValueError(f"Source file does not exist, or it is not a file: {source}")
         eprint(f"Reading blueprint string from {source}")
-        json_text = source.read_text()
+        json_text = source.read_text(encoding="utf8")
     processor = Processor(verbose, sort_mode, ids_mode, normalize_shift, compact, merge_index, merge_shift,
                           (override_shift_x, override_shift_y))
     data = processor.decode(json_text)
@@ -200,7 +200,7 @@ def encode_cmd(args: argparse.Namespace):
         data = json.loads("".join(sys.stdin.readlines()))
     elif args.source.is_file():
         eprint(f"Reading a json file from {args.source}")
-        data = json.loads(args.source.read_text())
+        data = json.loads(args.source.read_text(encoding="utf8"))
     elif args.source.is_dir():
         eprint(f"Reading json files from directory {args.source}")
         data = read_files(args.source, args.verbose)
@@ -216,7 +216,7 @@ def encode_cmd(args: argparse.Namespace):
         print(encoded)
     else:
         eprint(f"Writing to {args.destination}")
-        args.destination.write_text(encoded)
+        args.destination.write_text(encoded, "utf8")
 
 
 def get_non_index_key(data):
@@ -232,7 +232,7 @@ def read_files(dir_path: Path, verbose: bool) -> dict:
     metadata_path = dir_path / "_metadata.json"
     if not metadata_path.is_file():
         raise ValueError(f"Missing metadata file: {metadata_path}")
-    data = json.loads(metadata_path.read_text())
+    data = json.loads(metadata_path.read_text(encoding="utf8"))
     assert type(data) == dict
     blueprints = []
     key = get_non_index_key(data)
@@ -249,7 +249,7 @@ def read_files(dir_path: Path, verbose: bool) -> dict:
                 continue
             if verbose:
                 eprint(f"Loading {path}")
-            blueprints.append(json.loads(path.read_text()))
+            blueprints.append(json.loads(path.read_text(encoding="utf8")))
         else:
             eprint(f"Skipping unrecognized {path}")
     blueprints.sort(key=lambda v: v.get("index", 0))
@@ -352,7 +352,7 @@ class Processor:
         dest.mkdir(parents=True, exist_ok=True)
         book = data["blueprint_book"]
         blueprints = book.pop("blueprints", [])
-        (dest / "_metadata.json").write_text(to_pretty_json(data, self.compact) + "\n")
+        (dest / "_metadata.json").write_text(to_pretty_json(data, self.compact) + "\n", "utf8")
         files = set()
         for bp in blueprints:
             is_dir = "blueprint_book" in bp
@@ -376,13 +376,13 @@ class Processor:
     def write_single_file(self, data: dict, dest: Path) -> None:
         if dest.exists():
             self.migrate_old_data(data, dest)
-        dest.write_text(to_pretty_json(data, self.compact) + "\n")
+        dest.write_text(to_pretty_json(data, self.compact) + "\n", "utf8")
 
     def migrate_old_data(self, new_data: dict, dest: Path) -> None:
         msg = f"Overwriting {dest} with new data"
         old_data = None
         if self.merge_index or self.merge_shift:
-            old_data = json.loads(dest.read_text())
+            old_data = json.loads(dest.read_text(encoding="utf8"))
         if self.merge_index and "index" not in new_data:
             index = old_data.get("index", None)
             if index is not None:
@@ -818,7 +818,7 @@ def get_obj_hash(obj: Any) -> str:
     _rm_volatile(obj)
     # sort the object to ensure the hash is stable
     sort_dicts_rec(obj)
-    return hashlib.md5(to_json(obj).encode("utf-8")).hexdigest()[:4]
+    return hashlib.md5(to_json(obj).encode("utf8")).hexdigest()[:4]
 
 
 def to_json(data):
