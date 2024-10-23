@@ -91,6 +91,7 @@ def main():
                             * refs  - convert entity_id values to relative references.
                                       Set neighbours to the delta x,y relative to the current entity.
                                       Set schedules.locomotives to the absolute x,y of their position. 
+                                      Set schedules.wires to the absolute x,y of their entity position. 
                                       The original entity_id and entity_number values will be removed.
                             * mixed - Same as refs, but do not delete original entity_id values.
                             * keep  - Do not convert entity_id values."""))
@@ -494,7 +495,7 @@ class IdEncoder:
            from_entity_number is the ID of the current entity,
            unless typ is "locomotives", in which case it is just a debug string."""
         assert type(to_entity_id) == int
-        if typ != "locomotives":
+        if typ != "locomotives" and typ != "wires":
             from_entity = self.entity_ids[from_entity_number]
             from_x, from_y = from_entity.pos
         else:
@@ -514,9 +515,9 @@ class IdEncoder:
     def _parse_rel_id(self, entity_number: EID, rel_id: str, typ: Optional[str] = None) -> EID:
         """Convert a relative entity value to an entity ID.
            entity_number is the ID of the current entity,
-           unless typ is "locomotives", in which case it is just a debug string."""
+           unless typ is "locomotives" or "wires", in which case it is just a debug string."""
         assert type(rel_id) == str
-        if typ != "locomotives":
+        if typ != "locomotives" and typ != "wires":
             pe = self.entity_ids[entity_number]
             from_x, from_y = pe.pos
         else:
@@ -593,6 +594,8 @@ class Blueprint:
             self.ids.update_rel_ids(entity_data["entity_number"], entity_data)
         for idx, locomotive in enumerate(self.blueprint.get("schedules", [])):
             self.ids.update_ref_list(locomotive["locomotives"], f"schedule[{idx}]", "locomotives")
+        for idx, wires in enumerate(self.blueprint.get("wires", [])):
+            self.ids.update_ref_list(wires, f"wires[{idx}]", "wires")
 
     def shift_by_usage(self):
         hist_x = self.calc_histogram("x", by_name=False)
