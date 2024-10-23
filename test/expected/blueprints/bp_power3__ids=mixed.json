@@ -1,0 +1,83 @@
+{
+  "blueprint": {
+    "icons": [
+      {
+        "signal": {
+          "name": "small-electric-pole"
+        },
+        "index": 1
+      }
+    ],
+    "entities": [
+      {
+        "entity_number": 1,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -7.5,
+          "y": -0.5
+        }
+      },
+      {
+        "entity_number": 2,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -4.5,
+          "y": -0.5
+        }
+      },
+      {
+        "entity_number": 3,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -0.5,
+          "y": -0.5
+        }
+      },
+      {
+        "entity_number": 4,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -5.5,
+          "y": 4.5
+        }
+      },
+      {
+        "entity_number": 5,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -0.5,
+          "y": 3.5
+        }
+      },
+      {
+        "entity_number": 6,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -5.5,
+          "y": 9.5
+        }
+      },
+      {
+        "entity_number": 7,
+        "name": "small-electric-pole",
+        "position": {
+          "x": -0.5,
+          "y": 9.5
+        }
+      }
+    ],
+    "wires": [
+      [
+        1,
+        5,
+        3,
+        5
+      ]
+    ],
+    "item": "blueprint",
+    "label": "Phase #2",
+    "version": 562949953945601,
+    "shift_x": -52,
+    "shift_y": -63
+  }
+}
