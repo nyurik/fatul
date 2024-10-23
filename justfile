@@ -29,73 +29,46 @@ bless: clean run-tests
 # Perform all tests, storing results in the build dir
 run-tests:
     #!/usr/bin/env bash
+    set -euo pipefail
+
     echo "Running tests..."
     echo "The 'Destination has a .json extension, ...' warning is expected"
-    set -euxo pipefail
+
+    echo "------------------------ Blueprints ------------------------"
 
     mkdir -p test/build/blueprints
-    mkdir -p test/build/books
+    for file in test/raw/blueprints/*.txt; do
+        base=$(basename "$file" .txt)
+        echo "Testing $file ($base)"
+        set -x
+        {{DECODE}} "test/build/blueprints/${base}__decoded.json" "$file"
+        {{DUMP}} -p "test/build/blueprints/${base}.json" "$file"
+        {{ENCODE}} "test/build/blueprints/${base}__decoded.json" "test/build/blueprints/${base}__decoded_enc.txt"
+        {{DUMP}} -p "test/build/blueprints/${base}__dec_enc_dec.json" "test/build/blueprints/${base}__decoded_enc.txt"
+        {{DECODE}} -p --ids keep --sort none "test/build/blueprints/${base}__ids=keep.json" "$file"
+        {{ENCODE}} "test/build/blueprints/${base}__ids=keep.json" "test/build/blueprints/${base}__ids=keep__encoded.txt"
+        {{DECODE}} -p --ids refs --sort none "test/build/blueprints/${base}__ids=refs.json" "$file"
+        {{ENCODE}} "test/build/blueprints/${base}__ids=refs.json" "test/build/blueprints/${base}__ids=refs__encoded.txt"
+        {{DECODE}} -p --ids mixed --sort none "test/build/blueprints/${base}__ids=mixed.json" "$file"
+        {{ENCODE}} "test/build/blueprints/${base}__ids=mixed.json" "test/build/blueprints/${base}__ids=mixed__encoded.txt"
+        {{DECODE}} -p --ids keep --sort entities "test/build/blueprints/${base}__sort=entities.json" "$file"
+        {{DECODE}} -p --ids keep --sort keys "test/build/blueprints/${base}__sort=keys.json" "$file"
+        {{DECODE}} -p --ids keep --sort all "test/build/blueprints/${base}__sort=all.json" "$file"
+        { set +x; } 2>/dev/null
+    done
+
+    echo "------------------------ Deconstruct ------------------------"
+
     mkdir -p test/build/deconstruct
-
-    {{DECODE}} test/build/blueprints/power__decoded.json test/raw/blueprints/power.txt
-    {{DUMP}} -p test/build/blueprints/power.json test/raw/blueprints/power.txt
-    {{ENCODE}} test/build/blueprints/power__decoded.json test/build/blueprints/power__decoded_enc.txt
-    {{DUMP}} -p test/build/blueprints/power__dec_enc_dec.json test/build/blueprints/power__decoded_enc.txt
-    {{DECODE}} -p --ids keep --sort none test/build/blueprints/power__ids=keep.json test/raw/blueprints/power.txt
-    {{ENCODE}} test/build/blueprints/power__ids=keep.json test/build/blueprints/power__ids=keep__encoded.txt
-    {{DECODE}} -p --ids refs --sort none test/build/blueprints/power__ids=refs.json test/raw/blueprints/power.txt
-    {{ENCODE}} test/build/blueprints/power__ids=refs.json test/build/blueprints/power__ids=refs__encoded.txt
-    {{DECODE}} -p --ids mixed --sort none test/build/blueprints/power__ids=mixed.json test/raw/blueprints/power.txt
-    {{ENCODE}} test/build/blueprints/power__ids=mixed.json test/build/blueprints/power__ids=mixed__encoded.txt
-    {{DECODE}} -p --ids keep --sort entities test/build/blueprints/power__sort=entities.json test/raw/blueprints/power.txt
-    {{DECODE}} -p --ids keep --sort keys test/build/blueprints/power__sort=keys.json test/raw/blueprints/power.txt
-    {{DECODE}} -p --ids keep --sort all test/build/blueprints/power__sort=all.json test/raw/blueprints/power.txt
-
-    {{DECODE}} test/build/blueprints/logic__decoded.json test/raw/blueprints/logic.txt
-    {{DUMP}} -p test/build/blueprints/logic.json test/raw/blueprints/logic.txt
-    {{ENCODE}} test/build/blueprints/logic__decoded.json test/build/blueprints/logic__decoded_enc.txt
-    {{DUMP}} -p test/build/blueprints/logic__dec_enc_dec.json test/build/blueprints/logic__decoded_enc.txt
-    {{DECODE}} -p --ids keep --sort none test/build/blueprints/logic__ids=keep.json test/raw/blueprints/logic.txt
-    {{ENCODE}} test/build/blueprints/logic__ids=keep.json test/build/blueprints/logic__ids=keep__encoded.txt
-    {{DECODE}} -p --ids refs --sort none test/build/blueprints/logic__ids=refs.json test/raw/blueprints/logic.txt
-    {{ENCODE}} test/build/blueprints/logic__ids=refs.json test/build/blueprints/logic__ids=refs__encoded.txt
-    {{DECODE}} -p --ids mixed --sort none test/build/blueprints/logic__ids=mixed.json test/raw/blueprints/logic.txt
-    {{ENCODE}} test/build/blueprints/logic__ids=mixed.json test/build/blueprints/logic__ids=mixed__encoded.txt
-    {{DECODE}} -p --ids keep --sort entities test/build/blueprints/logic__sort=entities.json test/raw/blueprints/logic.txt
-    {{DECODE}} -p --ids keep --sort keys test/build/blueprints/logic__sort=keys.json test/raw/blueprints/logic.txt
-    {{DECODE}} -p --ids keep --sort all test/build/blueprints/logic__sort=all.json test/raw/blueprints/logic.txt
-
-    {{DECODE}} test/build/blueprints/schedule__decoded.json test/raw/blueprints/schedule.txt
-    {{DUMP}} -p test/build/blueprints/schedule.json test/raw/blueprints/schedule.txt
-    {{ENCODE}} test/build/blueprints/schedule__decoded.json test/build/blueprints/schedule__decoded_enc.txt
-    {{DUMP}} -p test/build/blueprints/schedule__dec_enc_dec.json test/build/blueprints/schedule__decoded_enc.txt
-    {{DECODE}} -p --ids keep --sort none test/build/blueprints/schedule__ids=keep.json test/raw/blueprints/schedule.txt
-    {{ENCODE}} test/build/blueprints/schedule__ids=keep.json test/build/blueprints/schedule__ids=keep__encoded.txt
-    {{DECODE}} -p --ids refs --sort none test/build/blueprints/schedule__ids=refs.json test/raw/blueprints/schedule.txt
-    {{ENCODE}} test/build/blueprints/schedule__ids=refs.json test/build/blueprints/schedule__ids=refs__encoded.txt
-    {{DECODE}} -p --ids mixed --sort none test/build/blueprints/schedule__ids=mixed.json test/raw/blueprints/schedule.txt
-    {{ENCODE}} test/build/blueprints/schedule__ids=mixed.json test/build/blueprints/schedule__ids=mixed__encoded.txt
-    {{DECODE}} -p --ids keep --sort entities test/build/blueprints/schedule__sort=entities.json test/raw/blueprints/schedule.txt
-    {{DECODE}} -p --ids keep --sort keys test/build/blueprints/schedule__sort=keys.json test/raw/blueprints/schedule.txt
-    {{DECODE}} -p --ids keep --sort all test/build/blueprints/schedule__sort=all.json test/raw/blueprints/schedule.txt
-
-    {{DECODE}} test/build/blueprints/dup__decoded.json test/raw/blueprints/dup.txt
-    {{DUMP}} -p test/build/blueprints/dup.json test/raw/blueprints/dup.txt
-    {{ENCODE}} test/build/blueprints/dup__decoded.json test/build/blueprints/dup__decoded_enc.txt
-    {{DUMP}} -p test/build/blueprints/dup__dec_enc_dec.json test/build/blueprints/dup__decoded_enc.txt
-    {{DECODE}} -p --ids keep --sort none test/build/blueprints/dup__ids=keep.json test/raw/blueprints/dup.txt
-    {{ENCODE}} test/build/blueprints/dup__ids=keep.json test/build/blueprints/dup__ids=keep__encoded.txt
-    {{DECODE}} -p --ids refs --sort none test/build/blueprints/dup__ids=refs.json test/raw/blueprints/dup.txt
-    {{ENCODE}} test/build/blueprints/dup__ids=refs.json test/build/blueprints/dup__ids=refs__encoded.txt
-    {{DECODE}} -p --ids mixed --sort none test/build/blueprints/dup__ids=mixed.json test/raw/blueprints/dup.txt
-    {{ENCODE}} test/build/blueprints/dup__ids=mixed.json test/build/blueprints/dup__ids=mixed__encoded.txt
-    {{DECODE}} -p --ids keep --sort entities test/build/blueprints/dup__sort=entities.json test/raw/blueprints/dup.txt
-    {{DECODE}} -p --ids keep --sort keys test/build/blueprints/dup__sort=keys.json test/raw/blueprints/dup.txt
-    {{DECODE}} -p --ids keep --sort all test/build/blueprints/dup__sort=all.json test/raw/blueprints/dup.txt
-
+    set -x
     {{DUMP}} -p test/build/deconstruct/empty       test/raw/deconstruct/empty.txt
     {{ENCODE}} test/build/deconstruct/empty.json    test/build/deconstruct/empty2.txt
+    { set +x; } 2>/dev/null
 
+    echo "------------------------ Books ------------------------"
+
+    mkdir -p test/build/books
+    set -x
     {{DUMP}} -p test/build/books/empty    test/raw/books/empty.txt
     {{DUMP}} -p test/build/books/empty_bp test/raw/books/empty_bp.txt
     {{DUMP}} -p test/build/books/nested   test/raw/books/nested.txt
@@ -106,16 +79,23 @@ run-tests:
 
     {{ENCODE}} test/build/books/nested/blueprint.json test/build/books/nested-bp.txt
     {{ENCODE}} test/build/books/nested/blueprint.json - | {{DECODE}} -p test/build/books/nested/blueprint.json -
+    { set +x; } 2>/dev/null
 
-    {{DUMP}} test/build/blueprints/edit1_dump.json test/raw/blueprints/edit1.txt
-    {{DUMP}} test/build/blueprints/edit2_dump.json test/raw/blueprints/edit2.txt
-    {{DUMP}} test/build/blueprints/edit3_dump.json test/raw/blueprints/edit3.txt
+    echo "------------------------ Sequence ------------------------"
 
-    {{DECODE}} test/build/blueprints/edit1.json test/raw/blueprints/edit1.txt
-    {{DECODE}} test/build/blueprints/edit2.json test/raw/blueprints/edit2.txt
-    {{DECODE}} test/build/blueprints/edit3.json test/raw/blueprints/edit3.txt
-    cp test/build/blueprints/edit1.json test/build/blueprints/edit_tmp.json
-    {{DECODE}} test/build/blueprints/edit_tmp.json test/raw/blueprints/edit2.txt
-    cp test/build/blueprints/edit_tmp.json test/build/blueprints/edit_merge2.json
-    {{DECODE}} test/build/blueprints/edit_tmp.json test/raw/blueprints/edit3.txt
-    mv test/build/blueprints/edit_tmp.json test/build/blueprints/edit_merge3.json
+    mkdir -p test/build/sequence
+    set -x
+    {{DUMP}} test/build/sequence/edit1_dump.json test/raw/sequence/edit1.txt
+    {{DUMP}} test/build/sequence/edit2_dump.json test/raw/sequence/edit2.txt
+    {{DUMP}} test/build/sequence/edit3_dump.json test/raw/sequence/edit3.txt
+
+    {{DECODE}} test/build/sequence/edit1.json test/raw/sequence/edit1.txt
+    {{DECODE}} test/build/sequence/edit2.json test/raw/sequence/edit2.txt
+    {{DECODE}} test/build/sequence/edit3.json test/raw/sequence/edit3.txt
+
+    cp test/build/sequence/edit1.json test/build/sequence/edit_tmp.json
+    {{DECODE}} test/build/sequence/edit_tmp.json test/raw/sequence/edit2.txt
+    cp test/build/sequence/edit_tmp.json test/build/sequence/edit_merge2.json
+    {{DECODE}} test/build/sequence/edit_tmp.json test/raw/sequence/edit3.txt
+    mv test/build/sequence/edit_tmp.json test/build/sequence/edit_merge3.json
+    { set +x; } 2>/dev/null
