@@ -17,8 +17,11 @@ clean:
     rm -rf "test/build"
     mkdir -p "test/build"
 
+# Legacy compatibility
+alias rebuild-expected := bless
+
 # Regenerate expected tests results by running tests and moving them to the expected dir
-rebuild-expected: clean run-tests
+bless: clean run-tests
     rm -rf "{{EXPECTED_DIR}}"
     mkdir -p "{{EXPECTED_DIR}}"
     mv "test/build"/* "{{EXPECTED_DIR}}/"
