@@ -490,6 +490,30 @@ class IdEncoder:
                 else:
                     data.append(self._parse_rel_id(entity_number, val, typ))
 
+    def update_wires_list(self, data, entity_number):
+        if len(data) != 4:
+            raise ValueError(f"Invalid wires list {entity_number}: must have 4 values")
+        if type(data[1]) != int or type(data[3]) != int:
+            raise ValueError(f"Invalid wires list {entity_number}: values 2 and 4 must be ints (e.g. 1=red, 2=green, 5=copper)")
+        list_is_int = type(data[0]) == int and type(data[2]) == int
+        list_is_str = type(data[0]) == str and type(data[2]) == str
+        if not list_is_str and not list_is_int:
+            raise ValueError(f"Invalid wires list {entity_number}: source/destination values must be either ints or strs")
+        if not self.to_abs_ids and not list_is_int:
+            raise ValueError(f"Invalid wires list {entity_number} - source/destination values must be ints")
+        if self.use_rel_ids != list_is_str:
+            # Convert entity IDs to relative IDs or vice versa
+            old_list = data.copy()
+            data.clear()
+            for idx, val in enumerate(old_list):
+                if idx % 2 == 0:
+                    if self.use_rel_ids:
+                        data.append(self._make_rel_id(entity_number, val, "wires"))
+                    else:
+                        data.append(self._parse_rel_id(entity_number, val, "wires"))
+                else:
+                    data.append(val)
+
     def _make_rel_id(self, from_entity_number: EID, to_entity_id: EID, typ: Optional[str] = None) -> str:
         """Convert an absolute entity ID to a relative ID.
            from_entity_number is the ID of the current entity,
@@ -595,7 +619,7 @@ class Blueprint:
         for idx, locomotive in enumerate(self.blueprint.get("schedules", [])):
             self.ids.update_ref_list(locomotive["locomotives"], f"schedule[{idx}]", "locomotives")
         for idx, wires in enumerate(self.blueprint.get("wires", [])):
-            self.ids.update_ref_list(wires, f"wires[{idx}]", "wires")
+            self.ids.update_wires_list(wires, f"wires[{idx}]")
 
     def shift_by_usage(self):
         hist_x = self.calc_histogram("x", by_name=False)

@@ -1,0 +1,54 @@
+{
+  "blueprint": {
+    "item": "blueprint",
+    "shift_x": 163,
+    "shift_y": -278,
+    "version": 562949954076673,
+    "entities": [
+      {
+        "name": "big-electric-pole",
+        "entity_number": 1,
+        "position": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "name": "big-electric-pole",
+        "entity_number": 2,
+        "position": {
+          "x": 31,
+          "y": 0
+        }
+      }
+    ],
+    "icons": [
+      {
+        "index": 1,
+        "signal": {
+          "name": "big-electric-pole"
+        }
+      }
+    ],
+    "wires": [
+      [
+        1,
+        1,
+        2,
+        1
+      ],
+      [
+        1,
+        2,
+        2,
+        2
+      ],
+      [
+        1,
+        5,
+        2,
+        5
+      ]
+    ]
+  }
+}

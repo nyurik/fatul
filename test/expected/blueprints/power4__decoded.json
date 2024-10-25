@@ -1,0 +1,14 @@
+{
+  "blueprint": {
+    "item": "blueprint",
+    "shift_x": 163,
+    "shift_y": -278,
+    "version": 562949954076673,
+    "entities": [
+      {"name": "big-electric-pole", "position": {"x": 0, "y": 0}},
+      {"name": "big-electric-pole", "position": {"x": 31, "y": 0}}
+    ],
+    "icons": [{"index": 1, "signal": {"name": "big-electric-pole"}}],
+    "wires": [["0,0", 1, "31,0", 1], ["0,0", 2, "31,0", 2], ["0,0", 5, "31,0", 5]]
+  }
+}
