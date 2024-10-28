@@ -42,18 +42,18 @@ run-tests:
         echo "Testing $file ($base)"
         set -x
         {{DECODE}} "test/build/blueprints/${base}__decoded.json" "$file"
-        {{DUMP}} -p "test/build/blueprints/${base}.json" "$file"
+        {{DUMP}} "test/build/blueprints/${base}.json" "$file"
         {{ENCODE}} "test/build/blueprints/${base}__decoded.json" "test/build/blueprints/${base}__decoded_enc.txt"
-        {{DUMP}} -p "test/build/blueprints/${base}__dec_enc_dec.json" "test/build/blueprints/${base}__decoded_enc.txt"
-        {{DECODE}} -p --ids keep --sort none "test/build/blueprints/${base}__ids=keep.json" "$file"
+        {{DUMP}} "test/build/blueprints/${base}__dec_enc_dec.json" "test/build/blueprints/${base}__decoded_enc.txt"
+        {{DECODE}} --ids keep --sort none "test/build/blueprints/${base}__ids=keep.json" "$file"
         {{ENCODE}} "test/build/blueprints/${base}__ids=keep.json" "test/build/blueprints/${base}__ids=keep__encoded.txt"
-        {{DECODE}} -p --ids refs --sort none "test/build/blueprints/${base}__ids=refs.json" "$file"
+        {{DECODE}} --ids refs --sort none "test/build/blueprints/${base}__ids=refs.json" "$file"
         {{ENCODE}} "test/build/blueprints/${base}__ids=refs.json" "test/build/blueprints/${base}__ids=refs__encoded.txt"
-        {{DECODE}} -p --ids mixed --sort none "test/build/blueprints/${base}__ids=mixed.json" "$file"
+        {{DECODE}} --ids mixed --sort none "test/build/blueprints/${base}__ids=mixed.json" "$file"
         {{ENCODE}} "test/build/blueprints/${base}__ids=mixed.json" "test/build/blueprints/${base}__ids=mixed__encoded.txt"
-        {{DECODE}} -p --ids keep --sort entities "test/build/blueprints/${base}__sort=entities.json" "$file"
-        {{DECODE}} -p --ids keep --sort keys "test/build/blueprints/${base}__sort=keys.json" "$file"
-        {{DECODE}} -p --ids keep --sort all "test/build/blueprints/${base}__sort=all.json" "$file"
+        {{DECODE}} --ids keep --sort entities "test/build/blueprints/${base}__sort=entities.json" "$file"
+        {{DECODE}} --ids keep --sort keys "test/build/blueprints/${base}__sort=keys.json" "$file"
+        {{DECODE}} --ids keep --sort all "test/build/blueprints/${base}__sort=all.json" "$file"
         { set +x; } 2>/dev/null
     done
 
@@ -61,7 +61,7 @@ run-tests:
 
     mkdir -p test/build/deconstruct
     set -x
-    {{DUMP}} -p test/build/deconstruct/empty       test/raw/deconstruct/empty.txt
+    {{DUMP}} test/build/deconstruct/empty       test/raw/deconstruct/empty.txt
     {{ENCODE}} test/build/deconstruct/empty.json    test/build/deconstruct/empty2.txt
     { set +x; } 2>/dev/null
 
@@ -69,16 +69,16 @@ run-tests:
 
     mkdir -p test/build/books
     set -x
-    {{DUMP}} -p test/build/books/empty    test/raw/books/empty.txt
-    {{DUMP}} -p test/build/books/empty_bp test/raw/books/empty_bp.txt
-    {{DUMP}} -p test/build/books/nested   test/raw/books/nested.txt
+    {{DUMP}} test/build/books/empty    test/raw/books/empty.txt
+    {{DUMP}} test/build/books/empty_bp test/raw/books/empty_bp.txt
+    {{DUMP}} test/build/books/nested   test/raw/books/nested.txt
 
     {{ENCODE}} test/build/books/empty      test/build/books/empty.txt
     {{ENCODE}} test/build/books/empty_bp   test/build/books/empty_bp.txt
     {{ENCODE}} test/build/books/nested     test/build/books/nested.txt
 
     {{ENCODE}} test/build/books/nested/blueprint.json test/build/books/nested-bp.txt
-    {{ENCODE}} test/build/books/nested/blueprint.json - | {{DECODE}} -p test/build/books/nested/blueprint.json -
+    {{ENCODE}} test/build/books/nested/blueprint.json - | {{DECODE}} test/build/books/nested/blueprint.json -
     { set +x; } 2>/dev/null
 
     echo "------------------------ Sequence ------------------------"

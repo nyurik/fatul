@@ -9,168 +9,54 @@
         "name": "arithmetic-combinator",
         "direction": 6,
         "entity_number": 4,
-        "connections": {
-          "1": {
-            "green": [
-              {
-                "circuit_id": 2,
-                "entity_id": 5
-              }
-            ]
-          },
-          "2": {
-            "red": [
-              {
-                "entity_id": 3
-              }
-            ]
-          }
-        },
+        "connections": {"1": {"green": [{"circuit_id": 2, "entity_id": 5}]}, "2": {"red": [{"entity_id": 3}]}},
         "control_behavior": {
           "arithmetic_conditions": {
             "operation": "/",
             "second_constant": 2,
-            "first_signal": {
-              "name": "signal-X",
-              "type": "virtual"
-            },
-            "output_signal": {
-              "name": "signal-X",
-              "type": "virtual"
-            }
+            "first_signal": {"name": "signal-X", "type": "virtual"},
+            "output_signal": {"name": "signal-X", "type": "virtual"}
           }
         },
-        "position": {
-          "x": 3,
-          "y": 2.5
-        }
+        "position": {"x": 3, "y": 2.5}
       },
       {
         "name": "constant-combinator",
         "direction": 4,
         "entity_number": 6,
-        "connections": {
-          "1": {
-            "red": [
-              {
-                "circuit_id": 1,
-                "entity_id": 5
-              }
-            ]
-          }
-        },
-        "control_behavior": {
-          "filters": [
-            {
-              "count": 42,
-              "index": 1,
-              "signal": {
-                "name": "signal-X",
-                "type": "virtual"
-              }
-            }
-          ]
-        },
-        "position": {
-          "x": 5.5,
-          "y": 4.5
-        }
+        "connections": {"1": {"red": [{"circuit_id": 1, "entity_id": 5}]}},
+        "control_behavior": {"filters": [{"count": 42, "index": 1, "signal": {"name": "signal-X", "type": "virtual"}}]},
+        "position": {"x": 5.5, "y": 4.5}
       },
       {
         "name": "decider-combinator",
         "direction": 6,
         "entity_number": 5,
-        "connections": {
-          "1": {
-            "red": [
-              {
-                "entity_id": 6
-              }
-            ]
-          },
-          "2": {
-            "green": [
-              {
-                "circuit_id": 1,
-                "entity_id": 4
-              }
-            ]
-          }
-        },
+        "connections": {"1": {"red": [{"entity_id": 6}]}, "2": {"green": [{"circuit_id": 1, "entity_id": 4}]}},
         "control_behavior": {
           "decider_conditions": {
             "comparator": ">",
             "constant": 0,
             "copy_count_from_input": true,
-            "first_signal": {
-              "name": "signal-X",
-              "type": "virtual"
-            },
-            "output_signal": {
-              "name": "signal-everything",
-              "type": "virtual"
-            }
+            "first_signal": {"name": "signal-X", "type": "virtual"},
+            "output_signal": {"name": "signal-everything", "type": "virtual"}
           }
         },
-        "position": {
-          "x": 3,
-          "y": 5.5
-        }
+        "position": {"x": 3, "y": 5.5}
       },
       {
         "name": "small-lamp",
         "entity_number": 3,
-        "connections": {
-          "1": {
-            "red": [
-              {
-                "circuit_id": 2,
-                "entity_id": 4
-              }
-            ]
-          }
-        },
+        "connections": {"1": {"red": [{"circuit_id": 2, "entity_id": 4}]}},
         "control_behavior": {
           "use_colors": true,
-          "circuit_condition": {
-            "comparator": "=",
-            "constant": 21,
-            "first_signal": {
-              "name": "signal-X",
-              "type": "virtual"
-            }
-          }
+          "circuit_condition": {"comparator": "=", "constant": 21, "first_signal": {"name": "signal-X", "type": "virtual"}}
         },
-        "position": {
-          "x": 0.5,
-          "y": 3.5
-        }
+        "position": {"x": 0.5, "y": 3.5}
       },
-      {
-        "name": "solar-panel",
-        "entity_number": 2,
-        "position": {
-          "x": 7.5,
-          "y": 1.5
-        }
-      },
-      {
-        "name": "substation",
-        "entity_number": 1,
-        "position": {
-          "x": 0,
-          "y": 0
-        }
-      }
+      {"name": "solar-panel", "entity_number": 2, "position": {"x": 7.5, "y": 1.5}},
+      {"name": "substation", "entity_number": 1, "position": {"x": 0, "y": 0}}
     ],
-    "icons": [
-      {
-        "index": 1,
-        "signal": {
-          "name": "arithmetic-combinator",
-          "type": "item"
-        }
-      }
-    ]
+    "icons": [{"index": 1, "signal": {"name": "arithmetic-combinator", "type": "item"}}]
   }
 }

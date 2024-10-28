@@ -1,48 +1,24 @@
 {
   "blueprint": {
-    "icons": [
-      {
-        "signal": {
-          "type": "item",
-          "name": "big-electric-pole"
-        },
-        "index": 1
-      }
-    ],
+    "icons": [{"signal": {"type": "item", "name": "big-electric-pole"}, "index": 1}],
     "entities": [
       {
         "entity_number": 1,
         "name": "big-electric-pole",
-        "position": {
-          "x": 0,
-          "y": 0
-        },
-        "neighbours": [
-          2,
-          3
-        ]
+        "position": {"x": 0, "y": 0},
+        "neighbours": [2, 3]
       },
       {
         "entity_number": 2,
         "name": "small-electric-pole",
-        "position": {
-          "x": 5.5,
-          "y": 1.5
-        },
-        "neighbours": [
-          1
-        ]
+        "position": {"x": 5.5, "y": 1.5},
+        "neighbours": [1]
       },
       {
         "entity_number": 3,
         "name": "medium-electric-pole",
-        "position": {
-          "x": 0.5,
-          "y": 5.5
-        },
-        "neighbours": [
-          1
-        ]
+        "position": {"x": 0.5, "y": 5.5},
+        "neighbours": [1]
       }
     ],
     "item": "blueprint",

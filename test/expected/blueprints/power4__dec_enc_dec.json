@@ -3,50 +3,10 @@
     "item": "blueprint",
     "version": 562949954076673,
     "entities": [
-      {
-        "entity_number": 1,
-        "name": "big-electric-pole",
-        "position": {
-          "x": 163,
-          "y": -278
-        }
-      },
-      {
-        "entity_number": 2,
-        "name": "big-electric-pole",
-        "position": {
-          "x": 194,
-          "y": -278
-        }
-      }
+      {"entity_number": 1, "name": "big-electric-pole", "position": {"x": 163, "y": -278}},
+      {"entity_number": 2, "name": "big-electric-pole", "position": {"x": 194, "y": -278}}
     ],
-    "icons": [
-      {
-        "index": 1,
-        "signal": {
-          "name": "big-electric-pole"
-        }
-      }
-    ],
-    "wires": [
-      [
-        1,
-        1,
-        2,
-        1
-      ],
-      [
-        1,
-        2,
-        2,
-        2
-      ],
-      [
-        1,
-        5,
-        2,
-        5
-      ]
-    ]
+    "icons": [{"index": 1, "signal": {"name": "big-electric-pole"}}],
+    "wires": [[1, 1, 2, 1], [1, 2, 2, 2], [1, 5, 2, 5]]
   }
 }

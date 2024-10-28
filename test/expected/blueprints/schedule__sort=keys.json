@@ -6,179 +6,59 @@
     "shift_y": 307,
     "version": 281479276265473,
     "entities": [
-      {
-        "name": "straight-rail",
-        "entity_number": 1,
-        "position": {
-          "x": 0,
-          "y": 0
-        }
-      },
+      {"name": "straight-rail", "entity_number": 1, "position": {"x": 0, "y": 0}},
       {
         "name": "cargo-wagon",
         "entity_number": 2,
         "inventory": null,
         "orientation": 0.5,
-        "position": {
-          "x": 0,
-          "y": 4.96875
-        }
+        "position": {"x": 0, "y": 4.96875}
       },
-      {
-        "name": "straight-rail",
-        "entity_number": 3,
-        "position": {
-          "x": 0,
-          "y": 2
-        }
-      },
-      {
-        "name": "straight-rail",
-        "entity_number": 4,
-        "position": {
-          "x": 0,
-          "y": 4
-        }
-      },
-      {
-        "name": "straight-rail",
-        "entity_number": 5,
-        "position": {
-          "x": 0,
-          "y": 6
-        }
-      },
-      {
-        "name": "straight-rail",
-        "entity_number": 6,
-        "position": {
-          "x": 0,
-          "y": 8
-        }
-      },
+      {"name": "straight-rail", "entity_number": 3, "position": {"x": 0, "y": 2}},
+      {"name": "straight-rail", "entity_number": 4, "position": {"x": 0, "y": 4}},
+      {"name": "straight-rail", "entity_number": 5, "position": {"x": 0, "y": 6}},
+      {"name": "straight-rail", "entity_number": 6, "position": {"x": 0, "y": 8}},
       {
         "name": "locomotive",
         "entity_number": 7,
         "orientation": 0.5,
-        "items": {
-          "rocket-fuel": 1
-        },
-        "position": {
-          "x": 0,
-          "y": 11.96875
-        }
+        "items": {"rocket-fuel": 1},
+        "position": {"x": 0, "y": 11.96875}
       },
-      {
-        "name": "straight-rail",
-        "entity_number": 8,
-        "position": {
-          "x": 0,
-          "y": 10
-        }
-      },
-      {
-        "name": "straight-rail",
-        "entity_number": 9,
-        "position": {
-          "x": 0,
-          "y": 12
-        }
-      },
-      {
-        "name": "straight-rail",
-        "entity_number": 10,
-        "position": {
-          "x": 0,
-          "y": 14
-        }
-      },
-      {
-        "name": "straight-rail",
-        "entity_number": 11,
-        "position": {
-          "x": 0,
-          "y": 16
-        }
-      }
+      {"name": "straight-rail", "entity_number": 8, "position": {"x": 0, "y": 10}},
+      {"name": "straight-rail", "entity_number": 9, "position": {"x": 0, "y": 12}},
+      {"name": "straight-rail", "entity_number": 10, "position": {"x": 0, "y": 14}},
+      {"name": "straight-rail", "entity_number": 11, "position": {"x": 0, "y": 16}}
     ],
-    "icons": [
-      {
-        "index": 1,
-        "signal": {
-          "name": "locomotive",
-          "type": "item"
-        }
-      }
-    ],
+    "icons": [{"index": 1, "signal": {"name": "locomotive", "type": "item"}}],
     "schedules": [
       {
-        "locomotives": [
-          7
-        ],
+        "locomotives": [7],
         "schedule": [
           {
             "station": "Elevator/Re-Fuel",
-            "wait_conditions": [
-              {
-                "compare_type": "or",
-                "ticks": 60,
-                "type": "inactivity"
-              }
-            ]
+            "wait_conditions": [{"compare_type": "or", "ticks": 60, "type": "inactivity"}]
           },
-          {
-            "station": "[img=entity/se-space-elevator]  Elevator ↑"
-          },
+          {"station": "[img=entity/se-space-elevator]  Elevator ↑"},
           {
             "station": "Shipyard/Waste-Supply",
             "wait_conditions": [
-              {
-                "compare_type": "or",
-                "type": "full"
-              },
+              {"compare_type": "or", "type": "full"},
               {
                 "compare_type": "and",
                 "type": "circuit",
-                "condition": {
-                  "comparator": "=",
-                  "constant": 0,
-                  "first_signal": {
-                    "name": "signal-red",
-                    "type": "virtual"
-                  }
-                }
+                "condition": {"comparator": "=", "constant": 0, "first_signal": {"name": "signal-red", "type": "virtual"}}
               },
-              {
-                "compare_type": "or",
-                "ticks": 3600,
-                "type": "inactivity"
-              },
+              {"compare_type": "or", "ticks": 3600, "type": "inactivity"},
               {
                 "compare_type": "and",
                 "type": "circuit",
-                "condition": {
-                  "comparator": ">",
-                  "constant": 0,
-                  "first_signal": {
-                    "name": "signal-green",
-                    "type": "virtual"
-                  }
-                }
+                "condition": {"comparator": ">", "constant": 0, "first_signal": {"name": "signal-green", "type": "virtual"}}
               }
             ]
           },
-          {
-            "station": "[img=entity/se-space-elevator]  Elevator ↓"
-          },
-          {
-            "station": "Shipyard/Waste-Receive",
-            "wait_conditions": [
-              {
-                "compare_type": "or",
-                "type": "empty"
-              }
-            ]
-          }
+          {"station": "[img=entity/se-space-elevator]  Elevator ↓"},
+          {"station": "Shipyard/Waste-Receive", "wait_conditions": [{"compare_type": "or", "type": "empty"}]}
         ]
       }
     ]

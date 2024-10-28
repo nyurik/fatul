@@ -3,120 +3,24 @@
     "item": "blueprint",
     "version": 562949953945601,
     "entities": [
-      {
-        "entity_number": 1,
-        "name": "small-electric-pole",
-        "position": {
-          "x": 81.5,
-          "y": -29.5
-        }
-      },
-      {
-        "entity_number": 2,
-        "name": "small-electric-pole",
-        "position": {
-          "x": 84.5,
-          "y": -29.5
-        }
-      },
-      {
-        "entity_number": 3,
-        "name": "small-electric-pole",
-        "position": {
-          "x": 88.5,
-          "y": -29.5
-        }
-      },
-      {
-        "entity_number": 4,
-        "name": "small-electric-pole",
-        "position": {
-          "x": 83.5,
-          "y": -24.5
-        }
-      },
-      {
-        "entity_number": 5,
-        "name": "small-electric-pole",
-        "position": {
-          "x": 83.5,
-          "y": -19.5
-        }
-      },
-      {
-        "entity_number": 6,
-        "name": "small-electric-pole",
-        "position": {
-          "x": 88.5,
-          "y": -25.5
-        }
-      },
-      {
-        "entity_number": 7,
-        "name": "small-electric-pole",
-        "position": {
-          "x": 88.5,
-          "y": -19.5
-        }
-      }
+      {"entity_number": 1, "name": "small-electric-pole", "position": {"x": 81.5, "y": -29.5}},
+      {"entity_number": 2, "name": "small-electric-pole", "position": {"x": 84.5, "y": -29.5}},
+      {"entity_number": 3, "name": "small-electric-pole", "position": {"x": 88.5, "y": -29.5}},
+      {"entity_number": 4, "name": "small-electric-pole", "position": {"x": 83.5, "y": -24.5}},
+      {"entity_number": 5, "name": "small-electric-pole", "position": {"x": 83.5, "y": -19.5}},
+      {"entity_number": 6, "name": "small-electric-pole", "position": {"x": 88.5, "y": -25.5}},
+      {"entity_number": 7, "name": "small-electric-pole", "position": {"x": 88.5, "y": -19.5}}
     ],
-    "icons": [
-      {
-        "index": 1,
-        "signal": {
-          "name": "small-electric-pole"
-        }
-      }
-    ],
+    "icons": [{"index": 1, "signal": {"name": "small-electric-pole"}}],
     "wires": [
-      [
-        1,
-        5,
-        3,
-        5
-      ],
-      [
-        1,
-        5,
-        4,
-        5
-      ],
-      [
-        2,
-        5,
-        4,
-        5
-      ],
-      [
-        2,
-        5,
-        6,
-        5
-      ],
-      [
-        3,
-        5,
-        6,
-        5
-      ],
-      [
-        4,
-        5,
-        5,
-        5
-      ],
-      [
-        4,
-        5,
-        7,
-        5
-      ],
-      [
-        6,
-        5,
-        7,
-        5
-      ]
+      [1, 5, 3, 5],
+      [1, 5, 4, 5],
+      [2, 5, 4, 5],
+      [2, 5, 6, 5],
+      [3, 5, 6, 5],
+      [4, 5, 5, 5],
+      [4, 5, 7, 5],
+      [6, 5, 7, 5]
     ]
   }
 }

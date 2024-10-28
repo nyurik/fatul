@@ -1,179 +1,59 @@
 {
   "blueprint": {
-    "icons": [
-      {
-        "signal": {
-          "type": "item",
-          "name": "locomotive"
-        },
-        "index": 1
-      }
-    ],
+    "icons": [{"signal": {"type": "item", "name": "locomotive"}, "index": 1}],
     "entities": [
-      {
-        "entity_number": 1,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 307
-        }
-      },
+      {"entity_number": 1, "name": "straight-rail", "position": {"x": 395, "y": 307}},
       {
         "entity_number": 2,
         "name": "cargo-wagon",
-        "position": {
-          "x": 395,
-          "y": 311.96875
-        },
+        "position": {"x": 395, "y": 311.96875},
         "orientation": 0.5,
         "inventory": null
       },
-      {
-        "entity_number": 3,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 309
-        }
-      },
-      {
-        "entity_number": 4,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 311
-        }
-      },
-      {
-        "entity_number": 5,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 313
-        }
-      },
-      {
-        "entity_number": 6,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 315
-        }
-      },
+      {"entity_number": 3, "name": "straight-rail", "position": {"x": 395, "y": 309}},
+      {"entity_number": 4, "name": "straight-rail", "position": {"x": 395, "y": 311}},
+      {"entity_number": 5, "name": "straight-rail", "position": {"x": 395, "y": 313}},
+      {"entity_number": 6, "name": "straight-rail", "position": {"x": 395, "y": 315}},
       {
         "entity_number": 7,
         "name": "locomotive",
-        "position": {
-          "x": 395,
-          "y": 318.96875
-        },
+        "position": {"x": 395, "y": 318.96875},
         "orientation": 0.5,
-        "items": {
-          "rocket-fuel": 1
-        }
+        "items": {"rocket-fuel": 1}
       },
-      {
-        "entity_number": 8,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 317
-        }
-      },
-      {
-        "entity_number": 9,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 319
-        }
-      },
-      {
-        "entity_number": 10,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 321
-        }
-      },
-      {
-        "entity_number": 11,
-        "name": "straight-rail",
-        "position": {
-          "x": 395,
-          "y": 323
-        }
-      }
+      {"entity_number": 8, "name": "straight-rail", "position": {"x": 395, "y": 317}},
+      {"entity_number": 9, "name": "straight-rail", "position": {"x": 395, "y": 319}},
+      {"entity_number": 10, "name": "straight-rail", "position": {"x": 395, "y": 321}},
+      {"entity_number": 11, "name": "straight-rail", "position": {"x": 395, "y": 323}}
     ],
     "schedules": [
       {
-        "locomotives": [
-          7
-        ],
+        "locomotives": [7],
         "schedule": [
           {
             "station": "Elevator/Re-Fuel",
-            "wait_conditions": [
-              {
-                "compare_type": "or",
-                "type": "inactivity",
-                "ticks": 60
-              }
-            ]
+            "wait_conditions": [{"compare_type": "or", "type": "inactivity", "ticks": 60}]
           },
-          {
-            "station": "[img=entity/se-space-elevator]  Elevator ↑"
-          },
+          {"station": "[img=entity/se-space-elevator]  Elevator ↑"},
           {
             "station": "Shipyard/Waste-Supply",
             "wait_conditions": [
-              {
-                "compare_type": "or",
-                "type": "full"
-              },
+              {"compare_type": "or", "type": "full"},
               {
                 "compare_type": "and",
                 "type": "circuit",
-                "condition": {
-                  "first_signal": {
-                    "type": "virtual",
-                    "name": "signal-red"
-                  },
-                  "constant": 0,
-                  "comparator": "="
-                }
+                "condition": {"first_signal": {"type": "virtual", "name": "signal-red"}, "constant": 0, "comparator": "="}
               },
-              {
-                "compare_type": "or",
-                "type": "inactivity",
-                "ticks": 3600
-              },
+              {"compare_type": "or", "type": "inactivity", "ticks": 3600},
               {
                 "compare_type": "and",
                 "type": "circuit",
-                "condition": {
-                  "first_signal": {
-                    "type": "virtual",
-                    "name": "signal-green"
-                  },
-                  "constant": 0,
-                  "comparator": ">"
-                }
+                "condition": {"first_signal": {"type": "virtual", "name": "signal-green"}, "constant": 0, "comparator": ">"}
               }
             ]
           },
-          {
-            "station": "[img=entity/se-space-elevator]  Elevator ↓"
-          },
-          {
-            "station": "Shipyard/Waste-Receive",
-            "wait_conditions": [
-              {
-                "compare_type": "or",
-                "type": "empty"
-              }
-            ]
-          }
+          {"station": "[img=entity/se-space-elevator]  Elevator ↓"},
+          {"station": "Shipyard/Waste-Receive", "wait_conditions": [{"compare_type": "or", "type": "empty"}]}
         ]
       }
     ],

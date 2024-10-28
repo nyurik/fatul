@@ -8,46 +8,22 @@
       {
         "name": "big-electric-pole",
         "entity_number": 1,
-        "neighbours": [
-          2,
-          3
-        ],
-        "position": {
-          "x": 0,
-          "y": 0
-        }
+        "neighbours": [2, 3],
+        "position": {"x": 0, "y": 0}
       },
       {
         "name": "medium-electric-pole",
         "entity_number": 3,
-        "neighbours": [
-          1
-        ],
-        "position": {
-          "x": 0.5,
-          "y": 5.5
-        }
+        "neighbours": [1],
+        "position": {"x": 0.5, "y": 5.5}
       },
       {
         "name": "small-electric-pole",
         "entity_number": 2,
-        "neighbours": [
-          1
-        ],
-        "position": {
-          "x": 5.5,
-          "y": 1.5
-        }
+        "neighbours": [1],
+        "position": {"x": 5.5, "y": 1.5}
       }
     ],
-    "icons": [
-      {
-        "index": 1,
-        "signal": {
-          "name": "big-electric-pole",
-          "type": "item"
-        }
-      }
-    ]
+    "icons": [{"index": 1, "signal": {"name": "big-electric-pole", "type": "item"}}]
   }
 }
