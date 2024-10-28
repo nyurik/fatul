@@ -1,4 +1,4 @@
 {
-  "upgrade_planner": {"settings": null, "item": "upgrade-planner", "version": 281479275675648},
-  "index": 2
+  "index": 2,
+  "upgrade_planner": {"item": "upgrade-planner", "settings": null, "version": 281479275675648}
 }

@@ -5,28 +5,28 @@
     "version": 281479276265473,
     "entities": [
       {
-        "entity_number": 1,
         "name": "cargo-wagon",
+        "entity_number": 1,
         "inventory": null,
         "orientation": 0.5,
         "position": {"x": 395, "y": 311.96875}
       },
       {
-        "entity_number": 2,
         "name": "locomotive",
+        "entity_number": 2,
         "orientation": 0.5,
         "items": {"rocket-fuel": 1},
         "position": {"x": 395, "y": 318.96875}
       },
-      {"entity_number": 3, "name": "straight-rail", "position": {"x": 395, "y": 307}},
-      {"entity_number": 4, "name": "straight-rail", "position": {"x": 395, "y": 309}},
-      {"entity_number": 5, "name": "straight-rail", "position": {"x": 395, "y": 311}},
-      {"entity_number": 6, "name": "straight-rail", "position": {"x": 395, "y": 313}},
-      {"entity_number": 7, "name": "straight-rail", "position": {"x": 395, "y": 315}},
-      {"entity_number": 8, "name": "straight-rail", "position": {"x": 395, "y": 317}},
-      {"entity_number": 9, "name": "straight-rail", "position": {"x": 395, "y": 319}},
-      {"entity_number": 10, "name": "straight-rail", "position": {"x": 395, "y": 321}},
-      {"entity_number": 11, "name": "straight-rail", "position": {"x": 395, "y": 323}}
+      {"name": "straight-rail", "entity_number": 3, "position": {"x": 395, "y": 307}},
+      {"name": "straight-rail", "entity_number": 4, "position": {"x": 395, "y": 309}},
+      {"name": "straight-rail", "entity_number": 5, "position": {"x": 395, "y": 311}},
+      {"name": "straight-rail", "entity_number": 6, "position": {"x": 395, "y": 313}},
+      {"name": "straight-rail", "entity_number": 7, "position": {"x": 395, "y": 315}},
+      {"name": "straight-rail", "entity_number": 8, "position": {"x": 395, "y": 317}},
+      {"name": "straight-rail", "entity_number": 9, "position": {"x": 395, "y": 319}},
+      {"name": "straight-rail", "entity_number": 10, "position": {"x": 395, "y": 321}},
+      {"name": "straight-rail", "entity_number": 11, "position": {"x": 395, "y": 323}}
     ],
     "icons": [{"index": 1, "signal": {"name": "locomotive", "type": "item"}}],
     "schedules": [

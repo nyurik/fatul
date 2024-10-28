@@ -42,9 +42,9 @@ run-tests:
         echo "Testing $file ($base)"
         set -x
         {{DECODE}} "test/build/blueprints/${base}__decoded.json" "$file"
-        {{DUMP}} "test/build/blueprints/${base}.json" "$file"
+        {{DUMP}} --sort "test/build/blueprints/${base}.json" "$file"
         {{ENCODE}} "test/build/blueprints/${base}__decoded.json" "test/build/blueprints/${base}__decoded_enc.txt"
-        {{DUMP}} "test/build/blueprints/${base}__dec_enc_dec.json" "test/build/blueprints/${base}__decoded_enc.txt"
+        {{DUMP}} --sort "test/build/blueprints/${base}__dec_enc_dec.json" "test/build/blueprints/${base}__decoded_enc.txt"
         {{DECODE}} --ids keep --sort none "test/build/blueprints/${base}__ids=keep.json" "$file"
         {{ENCODE}} "test/build/blueprints/${base}__ids=keep.json" "test/build/blueprints/${base}__ids=keep__encoded.txt"
         {{DECODE}} --ids refs --sort none "test/build/blueprints/${base}__ids=refs.json" "$file"
@@ -61,7 +61,7 @@ run-tests:
 
     mkdir -p test/build/deconstruct
     set -x
-    {{DUMP}} test/build/deconstruct/empty       test/raw/deconstruct/empty.txt
+    {{DUMP}} --sort test/build/deconstruct/empty       test/raw/deconstruct/empty.txt
     {{ENCODE}} test/build/deconstruct/empty.json    test/build/deconstruct/empty2.txt
     { set +x; } 2>/dev/null
 
@@ -69,9 +69,9 @@ run-tests:
 
     mkdir -p test/build/books
     set -x
-    {{DUMP}} test/build/books/empty    test/raw/books/empty.txt
-    {{DUMP}} test/build/books/empty_bp test/raw/books/empty_bp.txt
-    {{DUMP}} test/build/books/nested   test/raw/books/nested.txt
+    {{DUMP}} --sort test/build/books/empty    test/raw/books/empty.txt
+    {{DUMP}} --sort test/build/books/empty_bp test/raw/books/empty_bp.txt
+    {{DUMP}} --sort test/build/books/nested   test/raw/books/nested.txt
 
     {{ENCODE}} test/build/books/empty      test/build/books/empty.txt
     {{ENCODE}} test/build/books/empty_bp   test/build/books/empty_bp.txt
@@ -85,9 +85,9 @@ run-tests:
 
     mkdir -p test/build/sequence
     set -x
-    {{DUMP}} test/build/sequence/edit1_dump.json test/raw/sequence/edit1.txt
-    {{DUMP}} test/build/sequence/edit2_dump.json test/raw/sequence/edit2.txt
-    {{DUMP}} test/build/sequence/edit3_dump.json test/raw/sequence/edit3.txt
+    {{DUMP}} --sort test/build/sequence/edit1_dump.json test/raw/sequence/edit1.txt
+    {{DUMP}} --sort test/build/sequence/edit2_dump.json test/raw/sequence/edit2.txt
+    {{DUMP}} --sort test/build/sequence/edit3_dump.json test/raw/sequence/edit3.txt
 
     {{DECODE}} test/build/sequence/edit1.json test/raw/sequence/edit1.txt
     {{DECODE}} test/build/sequence/edit2.json test/raw/sequence/edit2.txt

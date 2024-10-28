@@ -1,9 +1,9 @@
 {
+  "index": 11,
   "blueprint_book": {
     "item": "blueprint-book",
     "label": "lvl2 [item=transport-belt]",
     "active_index": 0,
     "version": 281479275675648
-  },
-  "index": 11
+  }
 }

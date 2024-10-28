@@ -7,9 +7,9 @@
     "version": 281479275806721,
     "entities": [
       {
-        "entity_number": 1,
         "name": "arithmetic-combinator",
         "direction": 2,
+        "entity_number": 1,
         "connections": {"1": {"red": [{"entity_id": 5}]}, "2": {"red": [{"circuit_id": 2, "entity_id": 2}]}},
         "control_behavior": {
           "arithmetic_conditions": {
@@ -22,9 +22,9 @@
         "position": {"x": 263, "y": 202.5}
       },
       {
-        "entity_number": 2,
         "name": "arithmetic-combinator",
         "direction": 6,
+        "entity_number": 2,
         "connections": {
           "1": {"red": [{"entity_id": 6}]},
           "2": {"red": [{"circuit_id": 2, "entity_id": 1}, {"entity_id": 4}, {"entity_id": 3}]}
@@ -40,8 +40,8 @@
         "position": {"x": 267, "y": 202.5}
       },
       {
-        "entity_number": 3,
         "name": "fast-filter-miniloader-inserter",
+        "entity_number": 3,
         "override_stack_size": 1,
         "connections": {"1": {"red": [{"circuit_id": 2, "entity_id": 2}, {"entity_id": 4}]}},
         "control_behavior": {"circuit_mode_of_operation": 1},
@@ -50,8 +50,8 @@
         "position": {"x": 267.5, "y": 204.5}
       },
       {
-        "entity_number": 4,
         "name": "fast-filter-miniloader-inserter",
+        "entity_number": 4,
         "override_stack_size": 1,
         "connections": {"1": {"red": [{"circuit_id": 2, "entity_id": 2}, {"entity_id": 3}]}},
         "control_behavior": {"circuit_mode_of_operation": 1},
@@ -60,31 +60,31 @@
         "position": {"x": 267.5, "y": 204.5}
       },
       {
-        "entity_number": 5,
         "name": "medium-electric-pole",
+        "entity_number": 5,
         "connections": {"1": {"green": [{"entity_id": 7}], "red": [{"circuit_id": 1, "entity_id": 1}, {"entity_id": 7}]}},
-        "neighbours": [7, 6],
+        "neighbours": [6, 7],
         "position": {"x": 263.5, "y": 204.5}
       },
       {
-        "entity_number": 6,
         "name": "medium-electric-pole",
+        "entity_number": 6,
         "connections": {"1": {"green": [{"entity_id": 8}], "red": [{"circuit_id": 1, "entity_id": 2}, {"entity_id": 8}]}},
         "neighbours": [5, 8],
         "position": {"x": 266.5, "y": 204.5}
       },
       {
-        "entity_number": 7,
         "name": "medium-electric-pole",
+        "entity_number": 7,
         "connections": {"1": {"green": [{"entity_id": 5}], "red": [{"entity_id": 5}]}},
         "neighbours": [5, 8],
         "position": {"x": 263.5, "y": 211.5}
       },
       {
-        "entity_number": 8,
         "name": "medium-electric-pole",
+        "entity_number": 8,
         "connections": {"1": {"green": [{"entity_id": 6}], "red": [{"entity_id": 6}]}},
-        "neighbours": [7, 6],
+        "neighbours": [6, 7],
         "position": {"x": 266.5, "y": 211.5}
       }
     ],

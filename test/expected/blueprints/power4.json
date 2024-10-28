@@ -1,12 +1,12 @@
 {
   "blueprint": {
-    "icons": [{"signal": {"name": "big-electric-pole"}, "index": 1}],
-    "entities": [
-      {"entity_number": 1, "name": "big-electric-pole", "position": {"x": 163, "y": -278}},
-      {"entity_number": 2, "name": "big-electric-pole", "position": {"x": 194, "y": -278}}
-    ],
-    "wires": [[1, 1, 2, 1], [1, 2, 2, 2], [1, 5, 2, 5]],
     "item": "blueprint",
-    "version": 562949954076673
+    "version": 562949954076673,
+    "entities": [
+      {"name": "big-electric-pole", "entity_number": 1, "position": {"x": 163, "y": -278}},
+      {"name": "big-electric-pole", "entity_number": 2, "position": {"x": 194, "y": -278}}
+    ],
+    "icons": [{"index": 1, "signal": {"name": "big-electric-pole"}}],
+    "wires": [[1, 1, 2, 1], [1, 2, 2, 2], [1, 5, 2, 5]]
   }
 }

@@ -130,6 +130,8 @@ def main():
     dumper.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     dumper.add_argument("--pretty", "-p", dest="compact", default=True, action="store_false",
                         help="Use standard JSON formatting instead of compact")
+    dumper.add_argument("--sort", "-s", dest="sort", default=False, action="store_true",
+                        help="Sort output by keys")
     dumper.add_argument("destination", type=Path,
                         help="The destination file or directory to write to. "
                              "Use '-' to write to STDOUT as a single formatted JSON.")
@@ -163,7 +165,7 @@ def main():
 
 
 def dump_cmd(args: argparse.Namespace):
-    decode(args.source, args.destination, args.verbose, args.compact)
+    decode(args.source, args.destination, args.verbose, args.compact, sort_mode='keys' if args.sort else 'none')
 
 
 def decode_cmd(args: argparse.Namespace):
