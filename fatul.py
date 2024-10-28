@@ -65,6 +65,7 @@ SORT_ORDER = {
 }
 COMPLEX_TYPES = {dict, list}
 NUMBER_TYPES = (int, float)
+SPECIAL_REF_TYPES = {"locomotives", "wires", "stock_connections"}
 IdsMode = Literal["refs", "mixed", "keep"]
 SortMode = Literal["all", "entities", "keys", "none"]
 Position = NewType("Position", Tuple[int, int])
@@ -92,6 +93,7 @@ def main():
                                       Set neighbours to the delta x,y relative to the current entity.
                                       Set schedules.locomotives to the absolute x,y of their position. 
                                       Set schedules.wires to the absolute x,y of their entity position. 
+                                      Set schedules.stock_connections to the absolute x,y of their entity position. 
                                       The original entity_id and entity_number values will be removed.
                             * mixed - Same as refs, but do not delete original entity_id values.
                             * keep  - Do not convert entity_id values."""))
@@ -492,17 +494,19 @@ class IdEncoder:
                 else:
                     data.append(self._parse_rel_id(entity_number, val, typ))
 
-    def update_wires_list(self, data, entity_number):
+    def update_wires_list(self, data, entity_number, typ):
         if len(data) != 4:
-            raise ValueError(f"Invalid wires list {entity_number}: must have 4 values")
+            raise ValueError(f"Invalid {typ} list {entity_number}: must have 4 values")
         if type(data[1]) != int or type(data[3]) != int:
-            raise ValueError(f"Invalid wires list {entity_number}: values 2 and 4 must be ints (e.g. 1=red, 2=green, 5=copper)")
+            raise ValueError(
+                f"Invalid {typ} list {entity_number}: values 2 and 4 must be ints (e.g. 1=red, 2=green, 5=copper)")
         list_is_int = type(data[0]) == int and type(data[2]) == int
         list_is_str = type(data[0]) == str and type(data[2]) == str
         if not list_is_str and not list_is_int:
-            raise ValueError(f"Invalid wires list {entity_number}: source/destination values must be either ints or strs")
+            raise ValueError(
+                f"Invalid {typ} list {entity_number}: source/destination values must be either ints or strs")
         if not self.to_abs_ids and not list_is_int:
-            raise ValueError(f"Invalid wires list {entity_number} - source/destination values must be ints")
+            raise ValueError(f"Invalid {typ} list {entity_number} - source/destination values must be ints")
         if self.use_rel_ids != list_is_str:
             # Convert entity IDs to relative IDs or vice versa
             old_list = data.copy()
@@ -510,18 +514,33 @@ class IdEncoder:
             for idx, val in enumerate(old_list):
                 if idx % 2 == 0:
                     if self.use_rel_ids:
-                        data.append(self._make_rel_id(entity_number, val, "wires"))
+                        data.append(self._make_rel_id(entity_number, val, typ))
                     else:
-                        data.append(self._parse_rel_id(entity_number, val, "wires"))
+                        data.append(self._parse_rel_id(entity_number, val, typ))
                 else:
                     data.append(val)
+
+    def update_obj_values(self, data: dict, entity_number, typ):
+        list_is_int = all(type(v) == int for v in data.values())
+        list_is_str = all(type(v) == str for v in data.values())
+        if not list_is_str and not list_is_int:
+            raise ValueError(f"Invalid {typ} object {entity_number}: all values must be either ints or strs")
+        if not self.to_abs_ids and not list_is_int:
+            raise ValueError(f"Invalid {typ} object {entity_number} - all values must be ints")
+        if self.use_rel_ids != list_is_str:
+            # Convert entity IDs to relative IDs or vice versa
+            for key in data.keys():
+                if self.use_rel_ids:
+                    data[key] = self._make_rel_id(entity_number, data[key], typ)
+                else:
+                    data[key] = self._parse_rel_id(entity_number, data[key], typ)
 
     def _make_rel_id(self, from_entity_number: EID, to_entity_id: EID, typ: Optional[str] = None) -> str:
         """Convert an absolute entity ID to a relative ID.
            from_entity_number is the ID of the current entity,
-           unless typ is "locomotives", in which case it is just a debug string."""
+           unless typ is one of the SPECIAL_REF_TYPES, in which case it is just a debug string."""
         assert type(to_entity_id) == int
-        if typ != "locomotives" and typ != "wires":
+        if not typ in SPECIAL_REF_TYPES:
             from_entity = self.entity_ids[from_entity_number]
             from_x, from_y = from_entity.pos
         else:
@@ -541,9 +560,9 @@ class IdEncoder:
     def _parse_rel_id(self, entity_number: EID, rel_id: str, typ: Optional[str] = None) -> EID:
         """Convert a relative entity value to an entity ID.
            entity_number is the ID of the current entity,
-           unless typ is "locomotives" or "wires", in which case it is just a debug string."""
+           unless typ is one of the SPECIAL_REF_TYPES, in which case it is just a debug string."""
         assert type(rel_id) == str
-        if typ != "locomotives" and typ != "wires":
+        if not typ in SPECIAL_REF_TYPES:
             pe = self.entity_ids[entity_number]
             from_x, from_y = pe.pos
         else:
@@ -621,7 +640,9 @@ class Blueprint:
         for idx, locomotive in enumerate(self.blueprint.get("schedules", [])):
             self.ids.update_ref_list(locomotive["locomotives"], f"schedule[{idx}]", "locomotives")
         for idx, wires in enumerate(self.blueprint.get("wires", [])):
-            self.ids.update_wires_list(wires, f"wires[{idx}]")
+            self.ids.update_wires_list(wires, f"wires[{idx}]", "wires")
+        for idx, conn in enumerate(self.blueprint.get("stock_connections", [])):
+            self.ids.update_obj_values(conn, f"stock_connections[{idx}]", "stock_connections")
 
     def shift_by_usage(self):
         hist_x = self.calc_histogram("x", by_name=False)
@@ -752,7 +773,7 @@ class Blueprint:
         return Histogram(res)
 
 
-def sort_dicts_rec(data: Any, parent: Optional[str]=None) -> None:
+def sort_dicts_rec(data: Any, parent: Optional[str] = None) -> None:
     if type(data) == dict:
         for key, val in data.items():
             sort_dicts_rec(val, key)
