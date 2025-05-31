@@ -6,11 +6,11 @@ DECODE := FATUL + " decode -v"
 ENCODE := FATUL + " encode -v"
 DUMP   := FATUL + " dump -v"
 
-# Run tests and compare results with expected results
-test: clean run-tests
-    @echo "Comparing built results with the expected ones..."
-    {{DIFF_CMD}} "test/build" "{{EXPECTED_DIR}}"
-    @echo "all tests passed"
+# Regenerate expected tests results by running tests and moving them to the expected dir
+bless: clean run-tests
+    rm -rf "{{EXPECTED_DIR}}"
+    mkdir -p "{{EXPECTED_DIR}}"
+    mv "test/build"/* "{{EXPECTED_DIR}}/"
 
 # Remove temporary build files
 clean:
@@ -19,12 +19,6 @@ clean:
 
 # Legacy compatibility
 alias rebuild-expected := bless
-
-# Regenerate expected tests results by running tests and moving them to the expected dir
-bless: clean run-tests
-    rm -rf "{{EXPECTED_DIR}}"
-    mkdir -p "{{EXPECTED_DIR}}"
-    mv "test/build"/* "{{EXPECTED_DIR}}/"
 
 # Perform all tests, storing results in the build dir
 run-tests:
@@ -99,3 +93,9 @@ run-tests:
     {{DECODE}} test/build/sequence/edit_tmp.json test/raw/sequence/edit3.txt
     mv test/build/sequence/edit_tmp.json test/build/sequence/edit_merge3.json
     { set +x; } 2>/dev/null
+
+# Run tests and compare results with expected results
+test: clean run-tests
+    @echo "Comparing built results with the expected ones..."
+    {{DIFF_CMD}} "test/build" "{{EXPECTED_DIR}}"
+    @echo "all tests passed"
