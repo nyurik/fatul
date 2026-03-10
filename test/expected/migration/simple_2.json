@@ -1,0 +1,8 @@
+{
+  "blueprint": {
+    "item": "blueprint",
+    "version": 562949958205441,
+    "entities": [{"name": "small-electric-pole", "position": {"x": 0.5, "y": -0.5}}],
+    "icons": [{"index": 1, "signal": {"name": "small-electric-pole"}}]
+  }
+}

@@ -94,6 +94,17 @@ run-tests:
     mv test/build/sequence/edit_tmp.json test/build/sequence/edit_merge3.json
     { set +x; } 2>/dev/null
 
+    echo "------------------------ Migration ------------------------"
+
+    mkdir -p test/build/migration
+    set -x
+    {{DUMP}} --sort test/build/migration/simple_dump.json test/raw/migration/simple.txt
+
+    {{DECODE}} test/build/migration/simple_1.json test/raw/migration/simple.txt
+    cp test/build/migration/simple_1.json test/build/migration/simple_2.json
+    {{DECODE}} test/build/migration/simple_2.json test/raw/migration/simple.txt
+    { set +x; } 2>/dev/null
+
 # Run tests and compare results with expected results
 test: clean run-tests
     @echo "Comparing built results with the expected ones..."

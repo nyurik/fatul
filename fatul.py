@@ -728,6 +728,8 @@ class Blueprint:
         diffs = []
         for shift in shift_range:
             diffs.append((shift, self.calc_diff_score(old_hist, new_hist, shift)))
+        if not diffs:
+            return 0
         res = -min(diffs, key=lambda x: x[1])[0]
         return res
 
